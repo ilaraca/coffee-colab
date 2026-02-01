@@ -70,7 +70,7 @@
                 <p style="color: var(--cocoa); margin: 0.5rem 0;">{{ mission.description }}</p>
                 
                 <form action="/provider/missions/{{ mission.id }}/accept" method="post" style="margin-top: 1rem;">
-                    <button type="submit" class="btn-primary">Aceitar Missão</button>
+                    <button type="submit" class="btn btn-primary">Aceitar Missão</button>
                 </form>
             </div>
             {% else %}
@@ -90,9 +90,9 @@
                 {% if mission.status.value == 'ACCEPTED' %}
                 <form action="/provider/missions/{{ mission.id }}/done" method="post" style="margin-top: 1rem;">
                     <div style="margin-bottom: 0.5rem;">
-                        <input type="text" name="proof_of_work" placeholder="Evidência (Link ou Texto)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; box-sizing: border-box;">
+                        <input type="text" name="proof_of_work" class="form-control" placeholder="Evidência (Link ou Texto)">
                     </div>
-                    <button type="submit" class="btn-primary" style="background: var(--gold);">Concluir Missão</button>
+                    <button type="submit" class="btn btn-primary" style="background: var(--gold);">Concluir Missão</button>
                 </form>
                 {% elif mission.status.value == 'DONE' %}
                 <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação da cafeteria...</p>
@@ -106,7 +106,7 @@
         </div>
     {% elif tab == 'portfolio' %}
         <div style="margin-bottom: 2rem;">
-            <a href="/u/{{ user.id }}/portfolio" target="_blank" class="btn-primary" style="background: white; color: var(--ink); border: 1px solid var(--ink);">
+            <a href="/u/{{ user.id }}/portfolio" target="_blank" class="btn btn-primary" style="background: white; color: var(--ink); border: 1px solid var(--ink);">
                 Ver meu perfil público →
             </a>
         </div>
@@ -123,7 +123,7 @@
                         {% if item.is_public %}Publicado{% else %}Privado{% endif %}
                     </span>
                     <form action="/provider/portfolio/{{ item.id }}/toggle" method="post">
-                        <button type="submit" style="padding: 0.5rem 1rem; border: 1px solid var(--line); background: var(--cream); cursor: pointer; border-radius: 4px;">
+                        <button type="submit" class="btn btn-secondary" style="padding: 0.5rem 1rem; border: 1px solid var(--line); background: var(--cream);">
                             {% if item.is_public %}Tornar Privado{% else %}Tornar Público{% endif %}
                         </button>
                     </form>
@@ -167,9 +167,9 @@
             <form action="/wallet/token" method="post" class="token-form">
                 <div>
                     <label style="display: block; margin-bottom: 0.5rem; color: var(--cocoa);">Valor a consumir ($)</label>
-                    <input type="number" name="amount" min="1" max="{{ balance }}" required style="padding: 0.5rem; width: 150px; border: 1px solid var(--line); border-radius: 4px;">
+                    <input type="number" name="amount" min="1" max="{{ balance }}" required class="form-control" style="width: 150px;">
                 </div>
-                <button type="submit" class="btn-primary">Gerar QR Code</button>
+                <button type="submit" class="btn btn-primary">Gerar QR Code</button>
             </form>
         </div>
         {% endif %}

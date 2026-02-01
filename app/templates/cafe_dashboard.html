@@ -6,32 +6,33 @@
         <h2 style="margin: 0;">Painel da Cafeteria</h2>
         <p style="color: var(--sand);">Gerencie suas missões e aprove serviços.</p>
     </div>
-    <button onclick="document.getElementById('new-mission-form').style.display='block'" class="btn-primary">
+    <button onclick="document.getElementById('new-mission-form').style.display='block'" class="btn btn-primary">
         + Nova Missão
     </button>
 </div>
 
 <!-- New Mission Form (Hidden by default or Modal) -->
-<div id="new-mission-form" style="display: none; background: var(--card); padding: 1.5rem; margin-bottom: 2rem; border-radius: 8px; border: 1px solid var(--line);">
-    <h3 style="margin-top: 0;">Nova Missão</h3>
+<!-- New Mission Form -->
+<div id="new-mission-form" class="form-card" style="display: none;">
+    <h3 class="mb-2">Nova Missão</h3>
     <form action="/cafe/missions" method="post">
-        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
-            <div>
-                <label>Título</label>
-                <input type="text" name="title" required style="width: 100%; padding: 0.5rem;">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="title">Título da Missão</label>
+                <input type="text" id="title" name="title" class="form-control" placeholder="Ex: Criar logo 3D..." required>
             </div>
-            <div>
-                <label>Créditos (Valor)</label>
-                <input type="number" name="credit_value" min="1" required style="width: 100%; padding: 0.5rem;">
+            <div class="form-group">
+                <label for="credit_value">Valor (Créditos)</label>
+                <input type="number" id="credit_value" name="credit_value" class="form-control" min="1" placeholder="100" required>
             </div>
         </div>
-        <div style="margin-top: 1rem;">
-            <label>Descrição</label>
-            <textarea name="description" required rows="3" style="width: 100%; padding: 0.5rem;"></textarea>
+        <div class="form-group">
+            <label for="description">Descrição Detalhada</label>
+            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Descreva o que precisa ser feito..." required></textarea>
         </div>
-        <div style="margin-top: 1rem; text-align: right;">
-            <button type="button" onclick="document.getElementById('new-mission-form').style.display='none'" style="margin-right: 1rem;">Cancelar</button>
-            <button type="submit" class="btn-primary">Criar Missão</button>
+        <div class="text-right mt-2">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('new-mission-form').style.display='none'" style="margin-right: 0.5rem;">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Criar Missão</button>
         </div>
     </form>
 </div>
@@ -75,16 +76,16 @@
                 </div>
                 {% endif %}
 
-                <button onclick="document.getElementById('approve-{{ mission.id }}').style.display='block'" class="btn-primary" style="background: var(--gold); border: none; cursor: pointer;">
+                <button onclick="document.getElementById('approve-{{ mission.id }}').style.display='block'" class="btn btn-primary" style="background: var(--gold); border: none; cursor: pointer;">
                     Avaliar & Aprovar
                 </button>
                 
                 <!-- Simple Inline Modal for Approval -->
-                <div id="approve-{{ mission.id }}" style="display: none; margin-top: 1rem; padding: 1rem; border-top: 1px dashed var(--gold);">
+                <div id="approve-{{ mission.id }}" class="form-card" style="display: none; margin-top: 1rem; border: 1px dashed var(--gold); background: var(--cream);">
                     <form action="/cafe/missions/{{ mission.id }}/approve" method="post">
-                        <div style="margin-bottom: 0.5rem;">
+                        <div class="form-group">
                             <label>Nota (1-5)</label>
-                            <select name="score" required>
+                            <select name="score" class="form-control" required>
                                 <option value="5">5 estrelas</option>
                                 <option value="4">4 estrelas</option>
                                 <option value="3">3 estrelas</option>
@@ -92,18 +93,20 @@
                                 <option value="1">1 estrela</option>
                             </select>
                         </div>
-                        <div style="margin-bottom: 0.5rem;">
+                        <div class="form-group">
                             <label>Recomendação (Texto curto)</label>
-                            <input type="text" name="recommendation_text" required placeholder="Ex: Ótimo trabalho, muito atencioso!" style="width: 100%; padding: 0.3rem;">
+                            <input type="text" name="recommendation_text" class="form-control" required placeholder="Ex: Ótimo trabalho, muito atencioso!">
                         </div>
-                        <div style="margin-bottom: 0.5rem;">
-                            <label>
-                                <input type="checkbox" name="allow_public" value="true">
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; cursor: pointer;">
+                                <input type="checkbox" name="allow_public" value="true" style="margin-right: 0.5rem; width: auto;">
                                 Permitir uso no portfólio público
                             </label>
                         </div>
-                        <button type="submit" class="btn-primary" style="font-size: 0.9rem;">Confirmar Aprovação</button>
-                        <button type="button" onclick="document.getElementById('approve-{{ mission.id }}').style.display='none'" style="background: none; border: none; text-decoration: underline; cursor: pointer; color: var(--sand);">Cancelar</button>
+                        <div class="mt-2 text-right">
+                         <button type="button" onclick="document.getElementById('approve-{{ mission.id }}').style.display='none'" class="btn btn-secondary">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Confirmar Aprovação</button>
+                        </div>
                     </form>
                 </div>
                 
