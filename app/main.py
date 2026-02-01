@@ -6,8 +6,16 @@ from starlette.responses import RedirectResponse
 
 from app.core.config import settings
 from app.web import routes_auth
+import sentry_sdk
+
 # Explicitly import models to ensure persistence/metadata awareness
 from app.models import cafe, user, mission, rating, transaction, redeem, portfolio
+
+if settings.SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=1.0,
+    )
 
 app = FastAPI(title="Coffee Co-lab")
 
