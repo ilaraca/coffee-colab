@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .error-container {
+        text-align: center;
+        padding: 4rem 1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .error-icon {
+        font-size: 4rem;
+        display: block;
+        margin-bottom: 2rem;
+    }
+    .btn-action {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 1rem 2rem;
+        background: var(--terracotta);
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="error-container">
+    <span class="error-icon">🚫</span>
+    <h1 style="color: var(--ink); font-size: 2rem; margin-bottom: 1rem;">Acesso Negado</h1>
+    <p style="color: var(--cocoa); font-size: 1.2rem;">
+        Apenas administradores da cafeteria podem validar tokens de consumo.
+    </p>
+    <p style="margin-top: 1rem;">
+        Se você é o prestador, mostre o QR Code para o caixa.
+    </p>
+    
+    <a href="/login" class="btn-action">Entrar como Cafeteria</a>
+</div>
+{% endblock %}

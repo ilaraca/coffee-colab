@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .hero {
+        text-align: center;
+        padding: 6rem 1rem 4rem;
+        background: radial-gradient(circle at center, var(--cream) 0%, transparent 70%);
+    }
+    .hero h1 {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: var(--ink);
+        letter-spacing: -1px;
+    }
+    .hero p {
+        font-size: 1.4rem;
+        color: var(--cocoa);
+        max-width: 700px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+    }
+    
+    .section-title {
+        text-align: center;
+        color: var(--ink);
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        position: relative;
+        display: inline-block;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background: var(--gold);
+        margin: 1rem auto 0;
+    }
+
+    .split-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        margin: 6rem 0;
+        /* grid items stretch by default, which is what we want for equal height cols */
+    }
+    
+    .persona-col {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .persona-col h3 {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .steps-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem;
+    }
+    .steps-list li {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+        position: relative;
+        color: var(--cocoa);
+        line-height: 1.5;
+    }
+    .steps-list li::before {
+        content: '✓';
+        position: absolute;
+        left: 0;
+        color: var(--gold);
+        font-weight: bold;
+    }
+    
+    .benefits-box {
+        background: white;
+        padding: 2rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 4px 4px 0 var(--latte);
+        margin-top: auto; /* Push to bottom */
+    }
+    .benefits-box h4 {
+        margin-top: 0;
+        color: var(--ink);
+    }
+    
+    .concept-banner {
+        background: var(--ink);
+        color: var(--cream);
+        padding: 4rem 2rem;
+        text-align: center;
+        border-radius: 12px;
+        margin: 6rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .split-section { grid-template-columns: 1fr; gap: 3rem; }
+        .hero h1 { font-size: 2.5rem; }
+    }
+</style>
+
+<div class="hero">
+    <h1>Seu Talento Vale Café.</h1>
+    <p>
+        A <strong>Coffee Co-lab</strong> conecta cafeterias artesanais a criativos locais em uma economia colaborativa. 
+        Troque serviços por experiências gastronômicas incríveis.
+    </p>
+    
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="/login" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Começar Agora</a>
+        <a href="#como-funciona" class="btn-secondary" style="background: white; color: var(--ink); border: 1px solid var(--ink); padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 600;">Como Funciona</a>
+    </div>
+</div>
+
+<div id="como-funciona" class="container">
+    <h2 class="section-title">Para Quem É?</h2>
+
+    <div class="split-section">
+        <!-- Lado Cafeteria -->
+        <div class="persona-col">
+            <h3>☕ Para Cafeterias</h3>
+            <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 2rem;">
+                Resolva pendências do dia-a-dia usando o que você tem de melhor: seu produto, sem mexer no caixa.
+            </p>
+            
+            <ul class="steps-list">
+                <li><strong>Crie Missões:</strong> "Fotos do novo Latte" ou "Design de Menu".</li>
+                <li><strong>Aprove o Trabalho:</strong> Receba evidências do serviço feito.</li>
+                <li><strong>Pague com Créditos:</strong> Use o custo marginal do seu produto.</li>
+            </ul>
+            
+            <div class="benefits-box">
+                <h4>Por que usar?</h4>
+                <p>Economize caixa, atraia novos clientes criativos e resolva micro-demandas sem burocracia.</p>
+            </div>
+        </div>
+
+        <!-- Lado Prestador -->
+        <div class="persona-col">
+            <h3>🎨 Para Criativos</h3>
+            <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 2rem;">
+                Transforme tempo ocioso em consumo de qualidade e construa um portfólio validado.
+            </p>
+            
+            <ul class="steps-list">
+                <li><strong>Encontre Missões:</strong> Escolha tarefas que você ama fazer.</li>
+                <li><strong>Entregue & Ganhe:</strong> Envie o link do trabalho e receba créditos.</li>
+                <li><strong>Consuma:</strong> Gere um QR Code e troque por cafés reais.</li>
+            </ul>
+            
+            <div class="benefits-box">
+                <h4>Por que usar?</h4>
+                <p>Ganhe badges de confiança locais, faça networking e troque talento por experiências reais.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="concept-banner">
+    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--gold);">Banco de Escambo Moderno</h2>
+    <p style="font-size: 1.25rem; max-width: 800px; margin: 0 auto; opacity: 0.9;">
+        Nós acreditamos que <strong>o valor deve circular localmente</strong>. 
+        A cafeteria valoriza seu espaço. O criativo valoriza seu tempo. 
+        Juntos, criamos uma comunidade onde todos ganham.
+    </p>
+</div>
+
+<div style="text-align: center; margin-bottom: 4rem;">
+    <a href="/login" class="btn-primary" style="font-size: 1.5rem; padding: 1.5rem 3rem;">Junte-se ao Movimento</a>
+</div>
+{% endblock %}

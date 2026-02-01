@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 500px; margin: 2rem auto; text-align: center; border: 1px solid var(--line); padding: 2rem; border-radius: 8px; background: white;">
+    <h2>Validar Consumo</h2>
+    
+    {% if error %}
+        <div class="flash flash-error">{{ error }}</div>
+        <p><a href="/cafe">Voltar ao Painel</a></p>
+    {% else %}
+        <div style="margin-bottom: 2rem;">
+            <p style="font-size: 1.2rem;">Prestador: <strong>{{ provider.name }}</strong></p>
+            <h1 style="font-size: 3rem; margin: 1rem 0;">{{ token_obj.amount }} Créditos</h1>
+            <p>Status: {{ token_obj.status.value }}</p>
+            <p>Expira: {{ token_obj.expires_at.strftime('%H:%M:%S') }}</p>
+        </div>
+        
+        {% if can_confirm %}
+        <form action="/redeem/{{ token }}/confirm" method="post">
+            <button type="submit" class="btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem; background: green;">
+                CONFIRMAR CONSUMO
+            </button>
+        </form>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

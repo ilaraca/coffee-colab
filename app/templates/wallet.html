@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .wallet-header {
+        margin-bottom: 2rem;
+    }
+    
+    .qr-container {
+        background: #eef; 
+        padding: 2rem; 
+        border-radius: 8px; 
+        text-align: center; 
+        margin-bottom: 2rem; 
+        border: 2px dashed var(--ink);
+    }
+    .qr-img {
+        max-width: 200px; 
+        border: 10px solid white;
+    }
+    
+    .token-form-container {
+        background: var(--card); 
+        padding: 1.5rem; 
+        border-radius: 8px; 
+        margin-bottom: 2rem;
+    }
+    .token-form {
+        display: flex; 
+        gap: 1rem; 
+        align-items: flex-end;
+    }
+    
+    .tx-table {
+        width: 100%; 
+        border-collapse: collapse;
+    }
+    .tx-table th {
+        text-align: left; 
+        border-bottom: 1px solid var(--line);
+        padding: 0.5rem;
+    }
+    .tx-table td {
+        padding: 0.5rem;
+        border-bottom: 1px solid var(--cream);
+    }
+    
+    .tx-amount {
+        font-weight: bold;
+    }
+    .tx-amount.EARN {
+        color: green;
+    }
+    .tx-amount.SPEND {
+        color: red;
+    }
+</style>
+
+<div class="wallet-header">
+    <h2>Sua Carteira</h2>
+    <h1>{{ balance }} Créditos</h1>
+</div>
+
+{% if new_qr %}
+<div class="qr-container">
+    <h3>Seu Token de Consumo (Gerado)</h3>
+    <img src="{{ new_qr }}" class="qr-img">
+    <p>Mostre este QR Code no caixa.</p>
+    <p><small>Expira em: {{ new_token_expiry }}</small></p>
+    <p><a href="{{ redeem_link }}" target="_blank">Link direto (Simulação)</a></p>
+</div>
+{% else %}
+<div class="token-form-container">
+    <h3>Gerar Token de Consumo</h3>
+    <form action="/wallet/token" method="post" class="token-form">
+        <div>
+            <label>Valor a consumir</label>
+            <input type="number" name="amount" min="1" max="{{ balance }}" required style="padding: 0.5rem; width: 150px;">
+        </div>
+        <button type="submit" class="btn-primary">Gerar QR Code</button>
+    </form>
+</div>
+{% endif %}
+
+<h3>Extrato</h3>
+<table class="tx-table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Tipo</th>
+            <th>Valor</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tx in transactions %}
+        <tr>
+            <td>{{ tx.created_at.strftime('%d/%m %H:%M') }}</td>
+            <td>{{ tx.type.value }}</td>
+            <td class="tx-amount {{ tx.type.value }}">
+                {% if tx.type.value == 'EARN' %}+{% else %}-{% endif %}{{ tx.amount }}
+            </td>
+            <td>{{ tx.status.value }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

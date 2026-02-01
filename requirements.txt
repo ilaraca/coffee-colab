@@ -1,0 +1,15 @@
+fastapi>=0.109.0
+uvicorn[standard]
+sqlalchemy==2.0.25
+alembic
+psycopg2-binary
+jinja2
+python-multipart
+itsdangerous
+passlib[bcrypt]
+qrcode
+pillow>=10.2.0
+python-dotenv
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+bcrypt==4.0.1

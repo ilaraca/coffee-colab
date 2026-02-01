@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .tab-link {
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid transparent;
+        color: var(--sand);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .tab-link.active {
+        border-bottom-color: var(--ink);
+        color: var(--ink);
+    }
+    
+    .mission-card {
+        background: white; 
+        padding: 1.5rem; 
+        border: 1px solid var(--line); 
+        border-radius: 8px;
+    }
+    .mission-card.status-DONE {
+        border-color: var(--sand);
+    }
+    
+    .portfolio-status {
+        display: block; 
+        margin-bottom: 1rem; 
+        font-size: 0.9rem; 
+        color: var(--sand);
+    }
+    .portfolio-status.public {
+        color: green;
+    }
+</style>
+
+<div class="header" style="margin-bottom: 2rem;">
+    <h2>Painel do Prestador</h2>
+    <p style="color: var(--sand);">Encontre missões e gerencie seus trabalhos.</p>
+</div>
+
+<!-- Tabs -->
+<div style="border-bottom: 1px solid var(--line); margin-bottom: 1.5rem; display: flex; gap: 2rem;">
+    <a href="/provider?tab=open" class="tab-link {% if tab == 'open' %}active{% endif %}">
+        Missões Abertas
+    </a>
+    <a href="/provider?tab=my" class="tab-link {% if tab == 'my' %}active{% endif %}">
+        Minhas Missões
+    </a>
+    <a href="/provider?tab=portfolio" class="tab-link {% if tab == 'portfolio' %}active{% endif %}">
+        Portfólio
+    </a>
+    <a href="/provider?tab=wallet" class="tab-link {% if tab == 'wallet' %}active{% endif %}">
+        Carteira
+    </a>
+</div>
+
+<div class="tab-content">
+    {% if tab == 'open' %}
+        <div class="missions-grid" style="display: grid; gap: 1rem;">
+            {% for mission in missions_open %}
+            <div class="card mission-card" style="box-shadow: 2px 2px 0 var(--latte);">
+                <div style="display: flex; justify-content: space-between;">
+                    <h3 style="margin: 0; font-size: 1.2rem;">{{ mission.title }}</h3>
+                    <span style="background: var(--cream); color: var(--gold); padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">
+                        {{ mission.credit_value }} $
+                    </span>
+                </div>
+                <p style="color: var(--cocoa); margin: 0.5rem 0;">{{ mission.description }}</p>
+                
+                <form action="/provider/missions/{{ mission.id }}/accept" method="post" style="margin-top: 1rem;">
+                    <button type="submit" class="btn-primary">Aceitar Missão</button>
+                </form>
+            </div>
+            {% else %}
+            <p>Nenhuma missão disponível no momento.</p>
+            {% endfor %}
+        </div>
+    {% elif tab == 'my' %}
+        <div class="missions-grid" style="display: grid; gap: 1rem;">
+            {% for mission in missions_my %}
+            <div class="mission-card status-{{ mission.status.value }}">
+                <div style="display: flex; justify-content: space-between;">
+                    <h3 style="margin: 0;">{{ mission.title }}</h3>
+                    <span style="font-size: 0.8rem; font-weight: 600;">{{ mission.status.value }}</span>
+                </div>
+                <p>{{ mission.description }}</p>
+                
+                {% if mission.status.value == 'ACCEPTED' %}
+                <form action="/provider/missions/{{ mission.id }}/done" method="post" style="margin-top: 1rem;">
+                    <div style="margin-bottom: 0.5rem;">
+                        <input type="text" name="proof_of_work" placeholder="Evidência (Link ou Texto)" style="width: 100%; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; box-sizing: border-box;">
+                    </div>
+                    <button type="submit" class="btn-primary" style="background: var(--gold);">Concluir Missão</button>
+                </form>
+                {% elif mission.status.value == 'DONE' %}
+                <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação da cafeteria...</p>
+                {% elif mission.status.value == 'APPROVED' %}
+                <p style="color: green; font-size: 0.9rem;">Aprovada! Créditos recebidos.</p>
+                {% endif %}
+            </div>
+            {% else %}
+            <p>Você não pegou nenhuma missão.</p>
+            {% endfor %}
+        </div>
+    {% elif tab == 'portfolio' %}
+        <div style="margin-bottom: 2rem;">
+            <a href="/u/{{ user.id }}/portfolio" target="_blank" class="btn-primary" style="background: white; color: var(--ink); border: 1px solid var(--ink);">
+                Ver meu perfil público →
+            </a>
+        </div>
+        
+        <div class="missions-grid" style="display: grid; gap: 1rem;">
+            {% for item in items %}
+            <div class="mission-card" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 style="margin: 0;">{{ item.title }}</h3>
+                    <p style="margin: 0.5rem 0 0; color: var(--sand);">{{ item.summary }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <span class="portfolio-status {% if item.is_public %}public{% endif %}">
+                        {% if item.is_public %}Publicado{% else %}Privado{% endif %}
+                    </span>
+                    <form action="/provider/portfolio/{{ item.id }}/toggle" method="post">
+                        <button type="submit" style="padding: 0.5rem 1rem; border: 1px solid var(--line); background: var(--cream); cursor: pointer; border-radius: 4px;">
+                            {% if item.is_public %}Tornar Privado{% else %}Tornar Público{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <p>Nenhum item no portfólio. Complete missões para ganhar badges!</p>
+            {% endfor %}
+        </div>
+    {% elif tab == 'wallet' %}
+        <style>
+             .wallet-header { margin-bottom: 2rem; }
+             .qr-container { background: #eef; padding: 2rem; border-radius: 8px; text-align: center; margin-bottom: 2rem; border: 2px dashed var(--ink); }
+             .qr-img { max-width: 200px; border: 10px solid white; }
+             .token-form-container { background: white; padding: 1.5rem; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 2rem; box-shadow: 2px 2px 0 var(--latte);}
+             .token-form { display: flex; gap: 1rem; align-items: flex-end; }
+             .tx-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+             .tx-table th { text-align: left; border-bottom: 2px solid var(--line); padding: 0.5rem; color: var(--ink); }
+             .tx-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--cream); }
+             .tx-amount { font-weight: bold; }
+             .tx-amount.EARN { color: green; }
+             .tx-amount.SPEND { color: var(--terracotta); }
+        </style>
+
+        <div class="wallet-header">
+            <h2>Sua Carteira</h2>
+            <h1 style="font-size: 3rem; color: var(--ink);">{{ balance }} $</h1>
+        </div>
+
+        {% if new_qr %}
+        <div class="qr-container">
+            <h3>Seu Token de Consumo (Gerado)</h3>
+            <img src="{{ new_qr }}" class="qr-img">
+            <p>Mostre este QR Code no caixa.</p>
+            <p><small>Expira em: {{ new_token_expiry }}</small></p>
+            <p><a href="{{ redeem_link }}" target="_blank">Link direto (Simulação)</a></p>
+        </div>
+        {% else %}
+        <div class="token-form-container">
+            <h3 style="margin-top: 0;">Gerar Token de Consumo</h3>
+            <form action="/wallet/token" method="post" class="token-form">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--cocoa);">Valor a consumir ($)</label>
+                    <input type="number" name="amount" min="1" max="{{ balance }}" required style="padding: 0.5rem; width: 150px; border: 1px solid var(--line); border-radius: 4px;">
+                </div>
+                <button type="submit" class="btn-primary">Gerar QR Code</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <h3>Extrato</h3>
+        {% if transactions %}
+        <table class="tx-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                <tr>
+                    <td>{{ tx.created_at.strftime('%d/%m %H:%M') }}</td>
+                    <td>{{ tx.type.value }}</td>
+                    <td class="tx-amount {{ tx.type.value }}">
+                        {% if tx.type.value == 'EARN' %}+{% else %}-{% endif %}{{ tx.amount }} $
+                    </td>
+                    <td>{{ tx.status.value }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>Nenhuma transação encontrada.</p>
+        {% endif %}
+
+    {% endif %}
+</div>
+{% endblock %}

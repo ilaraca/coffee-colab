@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto; text-align: center;">
+    <h1>Bem-vindo de volta</h1>
+    <p style="color: var(--sand); margin-bottom: 2rem;">Acesse sua conta para continuar.</p>
+    
+    <form method="post" style="text-align: left; background: var(--card); padding: 2rem; border-radius: 8px; border: 1px solid var(--line);">
+        <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Email</label>
+            <input type="email" name="email" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; background: var(--cream);">
+        </div>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">Senha</label>
+            <input type="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid var(--line); border-radius: 4px; background: var(--cream);">
+        </div>
+        
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Entrar</button>
+    </form>
+    
+    <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--sand);">
+        <p>Credenciais Demo:</p>
+        <p>admin@modocafe.local / Admin123!</p>
+        <p>provider@modocafe.local / Provider123!</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="portfolio-header" style="text-align: center; margin-bottom: 3rem;">
+    <div style="width: 80px; height: 80px; background: var(--gold); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-family: 'Fraunces';">
+        {{ provider.name[0] }}
+    </div>
+    <h1 style="margin: 0;">{{ provider.name }}</h1>
+    <p style="color: var(--sand); margin-top: 0.5rem;">Prestador de Serviço Verificado</p>
+    
+    <div style="margin-top: 1rem; display: inline-block; background: var(--card); padding: 0.5rem 1.5rem; border-radius: 2rem; border: 1px solid var(--line);">
+        <span style="color: var(--gold); font-size: 1.2rem;">★</span> 
+        <span style="font-weight: 600; margin-left: 0.5rem;">{{ avg_score }}</span>
+    </div>
+</div>
+
+<div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+    {% for item in items %}
+    <div class="case-card" style="background: white; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; box-shadow: 4px 4px 0 var(--latte);">
+        <div style="padding: 1.5rem;">
+            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.5rem;">
+                {{ item.category }}
+            </div>
+            <h3 style="margin: 0; font-family: 'Fraunces'; font-size: 1.4rem;">{{ item.title }}</h3>
+            <p style="color: var(--cocoa); line-height: 1.5; margin-top: 1rem;">
+                "{{ item.summary }}"
+            </p>
+            
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--cream); font-size: 0.9rem; color: var(--sand); display: flex; justify-content: space-between;">
+                <span>
+                    {% if item.hide_cafe_name %}
+                        Cafeteria Parceira
+                    {% else %}
+                        Modo Café <!-- Hardcoded for MVP if model join tricky, but assuming we can fetch name? item.mission... -->
+                        <!-- Actually PortfolioItem has mission_id. We can join mission->cafe. -->
+                        <!-- For MVP, simplify "Cafeteria Parceira" default. -->
+                    {% endif %}
+                </span>
+                <span>Verificado ✓</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1/-1; text-align: center; color: var(--sand);">
+        <p>Este prestador ainda não publicou cases.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
