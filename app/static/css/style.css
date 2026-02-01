@@ -1,0 +1,196 @@
+:root {
+    --cream: #F7F3EE;
+    --latte: #EFE3D3;
+    --card: #FAF6F0;
+    --ink: #231A14;
+    --cocoa: #6A4F3B;
+    --sand: #8B7A6A;
+    --gold: #C89B3C;
+    --caramel: #B8743A;
+    --line: #E3D6C7;
+    --white: #FFFFFF;
+    --success: #2E7D32;
+    --danger: #D32F2F;
+}
+
+body {
+    background-color: var(--cream);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+a { 
+    color: var(--caramel); 
+    text-decoration: none; 
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--cocoa);
+}
+
+/* Utilities */
+.container { 
+    max-width: 900px; 
+    margin: 0 auto; 
+    padding: 2rem; 
+}
+
+.text-right { text-align: right; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background-color: var(--ink);
+    color: var(--cream);
+}
+
+.btn-primary:hover {
+    background-color: #000;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--sand);
+    border: 1px solid transparent;
+}
+
+.btn-secondary:hover {
+    color: var(--ink);
+    background-color: rgba(0,0,0,0.05);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+}
+
+.btn-outline:hover {
+    background-color: var(--gold);
+    color: white;
+}
+
+/* Flash Messages */
+.flash { padding: 1rem; margin-bottom: 1rem; border-radius: 6px; font-weight: 500;}
+.flash-error { background-color: #ffebee; color: var(--danger); border: 1px solid #ffcdd2; }
+.flash-success { background-color: #e8f5e9; color: var(--success); border: 1px solid #c8e6c9; }
+
+/* Forms */
+.form-card {
+    background: var(--white);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 12px rgba(35, 26, 20, 0.05);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: var(--cocoa);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    background-color: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box; /* Fix for padding increasing width */
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200, 155, 60, 0.2);
+    background-color: white;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Cards */
+.card {
+    background: var(--white);
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 2px 2px 0 var(--latte);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0 var(--latte);
+}
+
+.status-badge {
+    background: var(--latte);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+}
+
+/* Nav */
+nav {
+    border-bottom: 1px solid var(--line);
+    padding: 1rem 0;
+    background: var(--card);
+}
+
+.nav-link {
+    font-family: 'Fraunces', serif; 
+    font-size: 1.5rem; 
+    color: var(--ink); 
+    font-weight: 600;
+}

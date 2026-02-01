@@ -75,9 +75,9 @@
     <form action="/wallet/token" method="post" class="token-form">
         <div>
             <label>Valor a consumir</label>
-            <input type="number" name="amount" min="1" max="{{ balance }}" required style="padding: 0.5rem; width: 150px;">
+            <input type="number" name="amount" min="1" max="{{ balance }}" required class="form-control" style="width: 150px;">
         </div>
-        <button type="submit" class="btn-primary">Gerar QR Code</button>
+        <button type="submit" class="btn btn-primary">Gerar QR Code</button>
     </form>
 </div>
 {% endif %}
