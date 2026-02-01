@@ -23,8 +23,8 @@ app = FastAPI(title="Coffee Co-lab")
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 # Static
-# app.mount("/static", StaticFiles(directory="app/static"), name="static") 
-# (Creating empty static dir later if needed, for now using inline CSS for MVP speed)
+app.mount("/static", StaticFiles(directory="app/static"), name="static") 
+
 
 # Routes
 app.include_router(routes_auth.router)
