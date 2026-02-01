@@ -41,8 +41,10 @@ async def provider_dashboard(
         transactions = wallet_repo.get_transactions(db, user.id)
         balance = 0
         for tx in transactions:
-             if tx.type.value == 'EARN': balance += tx.amount
-             elif tx.type.value == 'SPEND': balance -= tx.amount
+            if tx.type.value == 'EARN':
+                balance += tx.amount
+            elif tx.type.value == 'SPEND':
+                balance -= tx.amount
         
         return templates.TemplateResponse("provider_dashboard.html", {
             "request": request, 
@@ -71,13 +73,13 @@ async def accept_mission(
     # Logic to accept mission (move to service later ideally)
     # Using repo directly for MVP speed
     import uuid
-    from app.models.mission import Mission, MissionStatus
+    from app.models.mission import MissionStatus
     
     mission = missions_repo.get_mission_by_id(db, uuid.UUID(mission_id))
     if not mission or mission.status != MissionStatus.OPEN:
         raise HTTPException(400, "Mission not available")
         
-    permissions = True # Any provider can accept open missions? Yes for MVP.
+    # permissions = True # Any provider can accept open missions? Yes for MVP.
     
     missions_repo.update_mission_status(db, mission, MissionStatus.ACCEPTED, user.id)
     return RedirectResponse(url="/provider?tab=my", status_code=status.HTTP_303_SEE_OTHER)
@@ -90,7 +92,7 @@ async def mark_done(
     db: Session = Depends(get_db)
 ):
     import uuid
-    from app.models.mission import Mission, MissionStatus
+    from app.models.mission import MissionStatus
     
     mission = missions_repo.get_mission_by_id(db, uuid.UUID(mission_id))
     if not mission:

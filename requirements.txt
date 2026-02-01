@@ -14,3 +14,8 @@ pydantic>=2.5.0
 pydantic-settings>=2.1.0
 bcrypt==4.0.1
 sentry-sdk[fastapi]
+
+# Dev / Guardrails
+ruff
+pytest
+httpx

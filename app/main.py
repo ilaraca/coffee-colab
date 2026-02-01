@@ -9,7 +9,6 @@ from app.web import routes_auth
 import sentry_sdk
 
 # Explicitly import models to ensure persistence/metadata awareness
-from app.models import cafe, user, mission, rating, transaction, redeem, portfolio
 
 if settings.SENTRY_DSN:
     sentry_sdk.init(
@@ -28,10 +27,10 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Routes
 app.include_router(routes_auth.router)
-from app.web import routes_cafe, routes_provider
+from app.web import routes_cafe, routes_provider  # noqa: E402
 app.include_router(routes_cafe.router)
 app.include_router(routes_provider.router)
-from app.web import routes_wallet, routes_redeem, routes_portfolio
+from app.web import routes_wallet, routes_redeem, routes_portfolio  # noqa: E402
 app.include_router(routes_wallet.router)
 app.include_router(routes_redeem.router)
 app.include_router(routes_portfolio.router)
