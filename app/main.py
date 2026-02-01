@@ -7,7 +7,6 @@ from starlette.responses import RedirectResponse
 from app.core.config import settings
 from app.web import routes_auth
 # Explicitly import models to ensure persistence/metadata awareness
-from app.models import cafe, user, mission, rating, transaction, redeem, portfolio
 
 app = FastAPI(title="Coffee Co-lab")
 
@@ -20,10 +19,10 @@ app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 # Routes
 app.include_router(routes_auth.router)
-from app.web import routes_cafe, routes_provider
+from app.web import routes_cafe, routes_provider  # noqa: E402
 app.include_router(routes_cafe.router)
 app.include_router(routes_provider.router)
-from app.web import routes_wallet, routes_redeem, routes_portfolio
+from app.web import routes_wallet, routes_redeem, routes_portfolio  # noqa: E402
 app.include_router(routes_wallet.router)
 app.include_router(routes_redeem.router)
 app.include_router(routes_portfolio.router)

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import uuid
 from fastapi import HTTPException
-from app.models.mission import Mission, MissionStatus
+from app.models.mission import MissionStatus
 from app.models.transaction import TransactionType
 from app.repos import missions_repo, ratings_repo, wallet_repo, portfolio_repo
 

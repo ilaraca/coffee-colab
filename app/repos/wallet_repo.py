@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 import uuid
 from typing import List, Optional
 from app.models.transaction import Transaction, TransactionType, TransactionStatus
