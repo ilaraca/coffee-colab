@@ -6,7 +6,15 @@ from starlette.responses import RedirectResponse
 
 from app.core.config import settings
 from app.web import routes_auth
+import sentry_sdk
+
 # Explicitly import models to ensure persistence/metadata awareness
+
+if settings.SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        traces_sample_rate=1.0,
+    )
 
 app = FastAPI(title="Coffee Co-lab")
 
@@ -14,8 +22,8 @@ app = FastAPI(title="Coffee Co-lab")
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 # Static
-# app.mount("/static", StaticFiles(directory="app/static"), name="static") 
-# (Creating empty static dir later if needed, for now using inline CSS for MVP speed)
+app.mount("/static", StaticFiles(directory="app/static"), name="static") 
+
 
 # Routes
 app.include_router(routes_auth.router)
