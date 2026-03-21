@@ -27,4 +27,5 @@ class Mission(Base, TimestampMixin):
     proof_of_work = Column(Text, nullable=True)
 
     # Relationships
+    cafe = relationship("Cafe", foreign_keys=[cafe_id], lazy="joined")
     rating = relationship("Rating", uselist=False, back_populates="mission")

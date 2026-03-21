@@ -630,6 +630,11 @@
                 <h4>{{ mission.title }}</h4>
                 <p>{{ mission.description[:100] }}{% if mission.description|length > 100 %}...{% endif %}</p>
                 <span class="mission-credits">{{ "{:,.0f}".format(mission.credit_value).replace(",", ".") }} Créditos</span>
+                {% if mission.cafe %}
+                <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--sand); display: flex; align-items: center; gap: 0.4rem;">
+                    <span>☕</span> {{ mission.cafe.name }}
+                </div>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}
