@@ -343,6 +343,23 @@
         color: var(--ink);
         font-size: 0.9rem;
     }
+    .btn-candidatar {
+        display: inline-block;
+        padding: 0.5rem 1.2rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--gold);
+        border: 1.5px solid var(--gold);
+        border-radius: 6px;
+        text-decoration: none;
+        letter-spacing: 0.03em;
+        transition: all 0.3s ease;
+    }
+    .btn-candidatar:hover {
+        background: var(--gold);
+        color: var(--white);
+        transform: translateX(3px);
+    }
 
     /* ===== Concept Banner ===== */
     .concept-banner {
@@ -635,6 +652,15 @@
                     <span>☕</span> {{ mission.cafe.name }}
                 </div>
                 {% endif %}
+                <div style="margin-top: 1rem;">
+                    {% if user and user.role.value == 'CAFE_ADMIN' %}
+                        <span style="font-size: 0.8rem; color: var(--sand); font-style: italic;">Sua Missão</span>
+                    {% elif user %}
+                        <a href="/provider" class="btn-candidatar">Candidatar-se →</a>
+                    {% else %}
+                        <a href="/login" class="btn-candidatar">Candidatar-se →</a>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         {% else %}
