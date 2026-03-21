@@ -1,181 +1,716 @@
 {% extends "base.html" %}
 
+{% block title %}Coffee Co-lab — Seu Talento Vale Café{% endblock %}
+
 {% block content %}
 <style>
+    /* ===== Animations ===== */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+    }
+    @keyframes lineGrow {
+        from { width: 0; }
+        to   { width: 60px; }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%      { transform: translateY(-8px); }
+    }
+
+    .animate-up    { animation: fadeUp 0.8s ease-out both; }
+    .animate-in    { animation: fadeIn 1s ease-out both; }
+    .delay-1       { animation-delay: 0.15s; }
+    .delay-2       { animation-delay: 0.3s; }
+    .delay-3       { animation-delay: 0.45s; }
+    .delay-4       { animation-delay: 0.6s; }
+
+    /* ===== Hero ===== */
     .hero {
         text-align: center;
-        padding: 6rem 1rem 4rem;
-        background: radial-gradient(circle at center, var(--cream) 0%, transparent 70%);
-    }
-    .hero h1 {
-        font-size: 4rem;
-        margin-bottom: 1.5rem;
-        color: var(--ink);
-        letter-spacing: -1px;
-    }
-    .hero p {
-        font-size: 1.4rem;
-        color: var(--cocoa);
-        max-width: 700px;
-        margin: 0 auto 3rem;
-        line-height: 1.6;
-    }
-    
-    .section-title {
-        text-align: center;
-        color: var(--ink);
-        font-size: 2.5rem;
-        margin-bottom: 3rem;
+        padding: 7rem 1rem 5rem;
         position: relative;
-        display: inline-block;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: -50%;
         left: 50%;
         transform: translateX(-50%);
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, var(--latte) 0%, transparent 70%);
+        z-index: 0;
+        pointer-events: none;
     }
-    .section-title::after {
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        font-weight: 600;
+        color: var(--gold);
+    }
+    .hero-badge::before,
+    .hero-badge::after {
         content: '';
+        width: 40px;
+        height: 1px;
+        background: var(--gold);
+    }
+    .hero h1 {
+        font-size: clamp(2.8rem, 7vw, 5rem);
+        font-weight: 600;
+        line-height: 1.05;
+        margin-bottom: 1.5rem;
+        color: var(--ink);
+        letter-spacing: -1.5px;
+    }
+    .hero h1 .accent { color: var(--gold); }
+    .hero-desc {
+        font-size: 1.2rem;
+        color: var(--cocoa);
+        max-width: 520px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.8;
+    }
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .hero-actions .btn {
+        padding: 1rem 2.5rem;
+        font-size: 1rem;
+        border-radius: 6px;
+    }
+    .btn-hero-outline {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--ink);
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .btn-hero-outline:hover {
+        background: var(--ink);
+        color: var(--cream);
+    }
+
+    /* ===== Stats ===== */
+    .stats-bar {
+        background: var(--ink);
+        padding: 3.5rem 2rem;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin: 0 -2rem;
+    }
+    .stat-item {
+        text-align: center;
+        color: var(--cream);
+    }
+    .stat-value {
+        font-family: 'Fraunces', serif;
+        font-size: clamp(2.5rem, 4vw, 3.5rem);
+        font-weight: 700;
+        color: var(--gold);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+    .stat-item:hover .stat-value { transform: scale(1.1); }
+    .stat-divider {
+        width: 30px;
+        height: 1px;
+        background: rgba(247,243,238,0.2);
+        margin: 0.75rem auto;
+        transition: all 0.3s ease;
+    }
+    .stat-item:hover .stat-divider {
+        width: 50px;
+        background: var(--gold);
+    }
+    .stat-label {
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 0.8rem;
+        font-weight: 500;
+        opacity: 0.8;
+    }
+
+    /* ===== Section Titles ===== */
+    .section-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    .section-header .overline {
         display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+    .section-header h2 {
+        font-size: clamp(2rem, 4vw, 3rem);
+        margin-bottom: 1rem;
+        letter-spacing: -0.5px;
+    }
+    .section-header .underline {
         width: 60px;
         height: 3px;
         background: var(--gold);
-        margin: 1rem auto 0;
+        margin: 0 auto;
+        animation: lineGrow 0.8s ease-out both;
     }
+
+    /* ===== Split Personas ===== */
+    .personas-section { padding: 5rem 0; }
 
     .split-section {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-        margin: 6rem 0;
-        /* grid items stretch by default, which is what we want for equal height cols */
+        gap: 3rem;
     }
-    
-    .persona-col {
-        display: flex;
-        flex-direction: column;
+
+    .persona-card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(35, 26, 20, 0.06);
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
     }
-    
-    .persona-col h3 {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
+    .persona-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 50px rgba(35, 26, 20, 0.12);
+    }
+
+    .persona-header {
+        padding: 2rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--line);
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 1rem;
     }
-    
-    .steps-list {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 2rem;
+    .persona-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        flex-shrink: 0;
     }
-    .steps-list li {
-        margin-bottom: 1rem;
-        padding-left: 2rem;
-        position: relative;
-        color: var(--cocoa);
-        line-height: 1.5;
+    .persona-icon.cafe  { background: var(--latte); }
+    .persona-icon.creative { background: #fef3cd; }
+    .persona-header h3 {
+        font-size: 1.4rem;
+        margin: 0;
     }
-    .steps-list li::before {
-        content: '✓';
-        position: absolute;
-        left: 0;
+    .persona-header p {
+        margin: 0.25rem 0 0;
+        font-size: 0.9rem;
+        color: var(--sand);
+    }
+
+    .persona-body { padding: 1.5rem 2rem 2rem; }
+
+    .step-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        align-items: flex-start;
+    }
+    .step-number {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--cream);
+        border: 1.5px solid var(--gold);
         color: var(--gold);
-        font-weight: bold;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
     }
-    
-    .benefits-box {
-        background: white;
-        padding: 2rem;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        box-shadow: 4px 4px 0 var(--latte);
-        margin-top: auto; /* Push to bottom */
-    }
-    .benefits-box h4 {
-        margin-top: 0;
+    .step-item strong {
         color: var(--ink);
     }
-    
+    .step-item p {
+        margin: 0;
+        color: var(--cocoa);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .benefits-box {
+        background: var(--cream);
+        padding: 1.25rem 1.5rem;
+        border-radius: 10px;
+        margin-top: 1.5rem;
+        border-left: 3px solid var(--gold);
+    }
+    .benefits-box h4 {
+        margin: 0 0 0.3rem;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--gold);
+    }
+    .benefits-box p {
+        margin: 0;
+        color: var(--cocoa);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+
+    /* ===== Missions Showcase ===== */
+    .missions-section {
+        padding: 5rem 0 4rem;
+    }
+    .missions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+    .mission-showcase {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.35s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .mission-showcase::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gold);
+        transform: scaleX(0);
+        transition: transform 0.35s ease;
+    }
+    .mission-showcase:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(35, 26, 20, 0.08);
+    }
+    .mission-showcase:hover::after { transform: scaleX(1); }
+
+    .mission-category {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 700;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+    }
+    .mission-showcase h4 {
+        font-size: 1.1rem;
+        margin: 0 0 0.5rem;
+    }
+    .mission-showcase p {
+        font-size: 0.85rem;
+        color: var(--sand);
+        margin: 0 0 1rem;
+        line-height: 1.5;
+    }
+    .mission-credits {
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 0.9rem;
+    }
+
+    /* ===== Concept Banner ===== */
     .concept-banner {
         background: var(--ink);
         color: var(--cream);
-        padding: 4rem 2rem;
+        padding: 5rem 2rem;
         text-align: center;
-        border-radius: 12px;
-        margin: 6rem 0;
+        border-radius: 16px;
+        margin: 4rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    .concept-banner::before {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(200,155,60,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .concept-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -80px;
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, rgba(200,155,60,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .concept-banner > * { position: relative; z-index: 1; }
+    .concept-banner h2 {
+        font-size: clamp(1.8rem, 4vw, 2.8rem);
+        margin-bottom: 1rem;
+        color: var(--gold);
+    }
+    .concept-banner p {
+        font-size: 1.15rem;
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0.85;
+        line-height: 1.8;
+    }
+    .concept-banner .stat-pills {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
+    }
+    .concept-banner .pill {
+        border: 1px solid rgba(200,155,60,0.3);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        color: var(--gold);
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        transition: all 0.3s ease;
+    }
+    .concept-banner .pill:hover {
+        background: rgba(200,155,60,0.15);
+        border-color: var(--gold);
     }
 
+    /* ===== CTA ===== */
+    .final-cta {
+        text-align: center;
+        padding: 3rem 0 5rem;
+    }
+    .final-cta p {
+        color: var(--sand);
+        margin-bottom: 1.5rem;
+        font-size: 1.05rem;
+    }
+    .final-cta .btn {
+        font-size: 1.2rem;
+        padding: 1.2rem 3rem;
+        box-shadow: 0 4px 15px rgba(35, 26, 20, 0.15);
+        transition: all 0.3s ease;
+    }
+    .final-cta .btn:hover {
+        box-shadow: 0 8px 25px rgba(35, 26, 20, 0.2);
+        transform: translateY(-2px);
+    }
+
+    /* ===== Footer ===== */
+    .landing-footer {
+        border-top: 1px solid var(--line);
+        padding: 3rem 0 2rem;
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 3rem;
+    }
+    .footer-brand {
+        font-family: 'Fraunces', serif;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+    }
+    .footer-brand span { color: var(--gold); }
+    .footer-desc {
+        font-size: 0.85rem;
+        color: var(--sand);
+        line-height: 1.6;
+    }
+    .footer-col h5 {
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 1rem;
+    }
+    .footer-col ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-col li { margin-bottom: 0.6rem; }
+    .footer-col a {
+        font-size: 0.9rem;
+        color: var(--sand);
+        transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--gold); }
+    .footer-bottom {
+        border-top: 1px solid var(--line);
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--sand);
+    }
+
+    /* ===== Responsive ===== */
     @media (max-width: 768px) {
-        .split-section { grid-template-columns: 1fr; gap: 3rem; }
-        .hero h1 { font-size: 2.5rem; }
+        .split-section { grid-template-columns: 1fr; }
+        .missions-grid { grid-template-columns: 1fr; }
+        .stats-bar { grid-template-columns: repeat(2, 1fr); }
+        .landing-footer { grid-template-columns: 1fr; gap: 2rem; }
     }
 </style>
 
-<div class="hero">
-    <h1>Seu Talento Vale Café.</h1>
-    <p>
-        A <strong>Coffee Co-lab</strong> conecta cafeterias artesanais a criativos locais em uma economia colaborativa. 
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <div class="hero-badge animate-up">Economia Colaborativa</div>
+    <h1 class="animate-up delay-1">
+        Seu Talento<br><span class="accent">Vale Café.</span>
+    </h1>
+    <p class="hero-desc animate-up delay-2">
+        A <strong>Coffee Co-lab</strong> conecta cafeterias artesanais a criativos locais.
         Troque serviços por experiências gastronômicas incríveis.
     </p>
-    
-    <div style="display: flex; gap: 1rem; justify-content: center;">
-        <a href="/login" class="btn btn-primary" style="font-size: 1.2rem; padding: 1rem 2rem;">Começar Agora</a>
-        <a href="#como-funciona" class="btn btn-secondary" style="background: white; color: var(--ink); border: 1px solid var(--ink); padding: 1rem 2rem; border-radius: 4px; text-decoration: none; font-weight: 600;">Como Funciona</a>
+    <div class="hero-actions animate-up delay-3">
+        {% if user %}
+            {% if user.role.value == 'CAFE_ADMIN' %}
+                <a href="/cafe" class="btn btn-primary">Ir para Gestão</a>
+            {% else %}
+                <a href="/provider" class="btn btn-primary">Ir para Meu Painel</a>
+            {% endif %}
+        {% else %}
+            <a href="/login" class="btn btn-primary">Começar Agora</a>
+        {% endif %}
+        <a href="#como-funciona" class="btn-hero-outline" style="padding: 1rem 2.5rem; border-radius: 6px;">Como Funciona</a>
+    </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<div class="stats-bar animate-in delay-4">
+    <div class="stat-item">
+        <div class="stat-value">100%</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Colaborativo</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">0</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Burocracia</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">∞</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Conexões Reais</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value">Local</div>
+        <div class="stat-divider"></div>
+        <div class="stat-label">Economia</div>
     </div>
 </div>
 
-<div id="como-funciona" class="container">
-    <h2 class="section-title">Para Quem É?</h2>
+<!-- ===== PARA QUEM É ===== -->
+<section id="como-funciona" class="personas-section">
+    <div class="section-header">
+        <span class="overline">A plataforma</span>
+        <h2>Para Quem É?</h2>
+        <div class="underline"></div>
+    </div>
 
     <div class="split-section">
-        <!-- Lado Cafeteria -->
-        <div class="persona-col">
-            <h3>☕ Para Cafeterias</h3>
-            <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 2rem;">
-                Resolva pendências do dia-a-dia usando o que você tem de melhor: seu produto, sem mexer no caixa.
-            </p>
-            
-            <ul class="steps-list">
-                <li><strong>Crie Missões:</strong> "Fotos do novo Latte" ou "Design de Menu".</li>
-                <li><strong>Aprove o Trabalho:</strong> Receba evidências do serviço feito.</li>
-                <li><strong>Pague com Créditos:</strong> Use o custo marginal do seu produto.</li>
-            </ul>
-            
-            <div class="benefits-box">
-                <h4>Por que usar?</h4>
-                <p>Economize caixa, atraia novos clientes criativos e resolva micro-demandas sem burocracia.</p>
+        <!-- Cafeteria -->
+        <div class="persona-card animate-up">
+            <div class="persona-header">
+                <div class="persona-icon cafe">☕</div>
+                <div>
+                    <h3>Para Cafeterias</h3>
+                    <p>Resolva demandas sem mexer no caixa.</p>
+                </div>
+            </div>
+            <div class="persona-body">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <p><strong>Crie Missões</strong> — Publique o que você precisa: "Fotos do Latte", "Design de Menu", "Gestão de Instagram".</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <p><strong>Aprove o Trabalho</strong> — Receba evidências, avalie e libere os créditos para o prestador.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <p><strong>Pague com Produto</strong> — Use o custo marginal do café como moeda de troca inteligente.</p>
+                </div>
+                <div class="benefits-box">
+                    <h4>✦ Benefício</h4>
+                    <p>Economize caixa, atraia clientes criativos e resolva micro-demandas sem burocracia.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Lado Prestador -->
-        <div class="persona-col">
-            <h3>🎨 Para Criativos</h3>
-            <p style="font-size: 1.1rem; color: var(--cocoa); margin-bottom: 2rem;">
-                Transforme tempo ocioso em consumo de qualidade e construa um portfólio validado.
-            </p>
-            
-            <ul class="steps-list">
-                <li><strong>Encontre Missões:</strong> Escolha tarefas que você ama fazer.</li>
-                <li><strong>Entregue & Ganhe:</strong> Envie o link do trabalho e receba créditos.</li>
-                <li><strong>Consuma:</strong> Gere um QR Code e troque por cafés reais.</li>
-            </ul>
-            
-            <div class="benefits-box">
-                <h4>Por que usar?</h4>
-                <p>Ganhe badges de confiança locais, faça networking e troque talento por experiências reais.</p>
+        <!-- Criativo -->
+        <div class="persona-card animate-up delay-2">
+            <div class="persona-header">
+                <div class="persona-icon creative">🎨</div>
+                <div>
+                    <h3>Para Criativos</h3>
+                    <p>Transforme talento em experiências reais.</p>
+                </div>
+            </div>
+            <div class="persona-body">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <p><strong>Encontre Missões</strong> — Escolha desafios que combinam com seu perfil e habilidades.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <p><strong>Entregue & Ganhe</strong> — Envie o link do trabalho concluído e receba créditos na sua carteira.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <p><strong>Consuma no Balcão</strong> — Gere um QR Code e troque seus créditos por cafés reais.</p>
+                </div>
+                <div class="benefits-box">
+                    <h4>✦ Benefício</h4>
+                    <p>Ganhe badges de confiança local, faça networking e troque talento por experiências únicas.</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
+<!-- ===== MISSÕES EXEMPLO ===== -->
+<section class="missions-section">
+    <div class="section-header">
+        <span class="overline">Oportunidades</span>
+        <h2>Exemplos de Missões</h2>
+        <div class="underline"></div>
+    </div>
+
+    <div class="missions-grid">
+        <div class="mission-showcase animate-up">
+            <div class="mission-category">Fotografia</div>
+            <h4>Fotos do Novo Menu</h4>
+            <p>Sessão fotográfica profissional para o menu de verão da cafeteria.</p>
+            <span class="mission-credits">800 Créditos</span>
+        </div>
+        <div class="mission-showcase animate-up delay-1">
+            <div class="mission-category">Arte & Design</div>
+            <h4>Design de Lousa</h4>
+            <p>Lettering criativo e arte chalk para a parede principal do salão.</p>
+            <span class="mission-credits">1.200 Créditos</span>
+        </div>
+        <div class="mission-showcase animate-up delay-2">
+            <div class="mission-category">Social Media</div>
+            <h4>Gestão de Instagram</h4>
+            <p>4 posts semanais + stories criativos durante 1 mês completo.</p>
+            <span class="mission-credits">2.500 Créditos</span>
+        </div>
+        <div class="mission-showcase animate-up delay-3">
+            <div class="mission-category">Música</div>
+            <h4>Música ao Vivo</h4>
+            <p>Apresentação acústica intimista de 2 horas na sexta-feira.</p>
+            <span class="mission-credits">1.500 Créditos</span>
+        </div>
+        <div class="mission-showcase animate-up delay-3">
+            <div class="mission-category">Educação</div>
+            <h4>Workshop de Barista</h4>
+            <p>Treinamento prático de métodos e latte art para equipe nova.</p>
+            <span class="mission-credits">2.000 Créditos</span>
+        </div>
+        <div class="mission-showcase animate-up delay-4">
+            <div class="mission-category">Eventos</div>
+            <h4>Degustação Guiada</h4>
+            <p>Curadoria e condução de cupping especial para clientes VIP.</p>
+            <span class="mission-credits">1.000 Créditos</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CONCEITO ===== -->
 <div class="concept-banner">
-    <h2 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--gold);">Banco de Escambo Moderno</h2>
-    <p style="font-size: 1.25rem; max-width: 800px; margin: 0 auto; opacity: 0.9;">
-        Nós acreditamos que <strong>o valor deve circular localmente</strong>. 
-        A cafeteria valoriza seu espaço. O criativo valoriza seu tempo. 
+    <h2>Banco de Escambo Moderno</h2>
+    <p>
+        Nós acreditamos que <strong>o valor deve circular localmente</strong>.
+        A cafeteria valoriza seu espaço. O criativo valoriza seu tempo.
         Juntos, criamos uma comunidade onde todos ganham.
     </p>
+    <div class="stat-pills">
+        <span class="pill">Sem Dinheiro</span>
+        <span class="pill">Sem Intermediários</span>
+        <span class="pill">100% Local</span>
+        <span class="pill">Confiança Mútua</span>
+    </div>
 </div>
 
-<div style="text-align: center; margin-bottom: 4rem;">
-    <a href="/login" class="btn btn-primary" style="font-size: 1.5rem; padding: 1.5rem 3rem;">Junte-se ao Movimento</a>
+<!-- ===== CTA FINAL ===== -->
+<div class="final-cta">
+    <p>Pronto para transformar talento em café?</p>
+    {% if user %}
+        {% if user.role.value == 'CAFE_ADMIN' %}
+            <a href="/cafe" class="btn btn-primary">Voltar para Gestão</a>
+        {% else %}
+            <a href="/provider" class="btn btn-primary">Voltar para Meu Painel</a>
+        {% endif %}
+    {% else %}
+        <a href="/login" class="btn btn-primary">Junte-se ao Movimento</a>
+    {% endif %}
 </div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="landing-footer">
+        <div>
+            <div class="footer-brand">COFFEE<span>CO-LAB</span></div>
+            <p class="footer-desc">Conectando cafeterias artesanais a criativos locais em uma economia colaborativa.</p>
+        </div>
+        <div class="footer-col">
+            <h5>Explorar</h5>
+            <ul>
+                <li><a href="#como-funciona">Como Funciona</a></li>
+                <li><a href="/login">Missões</a></li>
+                <li><a href="/login">Comunidade</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h5>Sobre</h5>
+            <ul>
+                <li><a href="#como-funciona">Manifesto</a></li>
+                <li><a href="#">Contato</a></li>
+                <li><a href="#">Termos</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © 2026 Coffee Co-lab. Todos os direitos reservados.
+    </div>
+</footer>
 {% endblock %}
