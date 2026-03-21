@@ -39,22 +39,17 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/")
 async def home(request: Request):
+    user = None
     user_id = request.session.get("user_id")
-    # If logged in, maybe still show landing but with "Dashboard" button?
-    # Or redirect to Dashboard? 
-    # Usually Landing Page is for non-logged users.
     if user_id:
-        role = request.session.get("role")
-        target = "/cafe" if role == "CAFE_ADMIN" else "/provider"
-        return RedirectResponse(target)
-    
-    return templates.TemplateResponse("landing.html", {"request": request})
+        from app.core.db import SessionLocal
+        from app.models.user import User
+        db = SessionLocal()
+        try:
+            user = db.query(User).filter(User.id == user_id).first()
+        finally:
+            db.close()
 
-# Placeholder for dashboards to prevent 404 during incremental build
-@app.get("/cafe")
-async def cafe_dashboard():
-    return "Cafe Dashboard (Coming Soon)"
-
-@app.get("/provider")
-async def provider_dashboard():
-    return "Provider Dashboard (Coming Soon)"
+    return templates.TemplateResponse(
+        "landing.html", {"request": request, "user": user}
+    )
