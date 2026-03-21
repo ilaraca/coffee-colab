@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 4rem auto; text-align: center;">
+    <h1>Crie sua conta</h1>
+    <p style="color: var(--sand); margin-bottom: 2rem;">Junte-se à comunidade Coffee Co-lab.</p>
+    
+    {% if error %}
+    <div style="color: red; margin-bottom: 1rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" action="/register" class="form-card" style="text-align: left;">
+        <div class="form-group">
+            <label for="name">Nome Completo</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" class="form-control" required minlength="6">
+        </div>
+
+        <div class="form-group">
+            <label for="role">Tipo de Conta</label>
+            <select id="role" name="role" class="form-control" required>
+                <option value="PROVIDER">Prestador (Quero missões)</option>
+                <option value="CAFE_ADMIN">Cafeteria (Quero cadastrar missões)</option>
+            </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Cadastrar</button>
+    </form>
+    
+    <div style="margin-top: 1.5rem; font-size: 0.9rem;">
+        <a href="/login" style="color: var(--gold); text-decoration: none; font-weight: 600;">Já tem uma conta? Entrar</a>
+    </div>
+</div>
+{% endblock %}

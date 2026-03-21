@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from app.repos import users_repo
-from app.core.security import verify_password
-from app.models.user import User
+from app.core.security import verify_password, get_password_hash
+from app.models.user import User, UserRole
 
 class AuthService:
     def __init__(self, db: Session):
@@ -15,3 +15,17 @@ class AuthService:
         if not verify_password(password, user.password_hash):
             return None
         return user
+
+    def register_user(self, name: str, email: str, password: str, role: UserRole) -> User:
+        existing_user = users_repo.get_user_by_email(self.db, email)
+        if existing_user:
+            raise ValueError("Email já cadastrado.")
+        
+        hashed_password = get_password_hash(password)
+        new_user = User(
+            name=name,
+            email=email,
+            password_hash=hashed_password,
+            role=role
+        )
+        return users_repo.create_user(self.db, new_user)
