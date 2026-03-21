@@ -607,51 +607,69 @@
     </div>
 </section>
 
-<!-- ===== MISSÕES EXEMPLO ===== -->
+<!-- ===== MISSÕES REAIS ===== -->
 <section class="missions-section">
     <div class="section-header">
         <span class="overline">Oportunidades</span>
-        <h2>Exemplos de Missões</h2>
+        {% if missions %}
+            <h2>Missões Disponíveis</h2>
+        {% else %}
+            <h2>Exemplos de Missões</h2>
+        {% endif %}
         <div class="underline"></div>
     </div>
 
     <div class="missions-grid">
-        <div class="mission-showcase animate-up">
-            <div class="mission-category">Fotografia</div>
-            <h4>Fotos do Novo Menu</h4>
-            <p>Sessão fotográfica profissional para o menu de verão da cafeteria.</p>
-            <span class="mission-credits">800 Créditos</span>
-        </div>
-        <div class="mission-showcase animate-up delay-1">
-            <div class="mission-category">Arte & Design</div>
-            <h4>Design de Lousa</h4>
-            <p>Lettering criativo e arte chalk para a parede principal do salão.</p>
-            <span class="mission-credits">1.200 Créditos</span>
-        </div>
-        <div class="mission-showcase animate-up delay-2">
-            <div class="mission-category">Social Media</div>
-            <h4>Gestão de Instagram</h4>
-            <p>4 posts semanais + stories criativos durante 1 mês completo.</p>
-            <span class="mission-credits">2.500 Créditos</span>
-        </div>
-        <div class="mission-showcase animate-up delay-3">
-            <div class="mission-category">Música</div>
-            <h4>Música ao Vivo</h4>
-            <p>Apresentação acústica intimista de 2 horas na sexta-feira.</p>
-            <span class="mission-credits">1.500 Créditos</span>
-        </div>
-        <div class="mission-showcase animate-up delay-3">
-            <div class="mission-category">Educação</div>
-            <h4>Workshop de Barista</h4>
-            <p>Treinamento prático de métodos e latte art para equipe nova.</p>
-            <span class="mission-credits">2.000 Créditos</span>
-        </div>
-        <div class="mission-showcase animate-up delay-4">
-            <div class="mission-category">Eventos</div>
-            <h4>Degustação Guiada</h4>
-            <p>Curadoria e condução de cupping especial para clientes VIP.</p>
-            <span class="mission-credits">1.000 Créditos</span>
-        </div>
+        {% if missions %}
+            {% for mission in missions %}
+            <div class="mission-showcase animate-up{% if loop.index <= 4 %} delay-{{ loop.index }}{% endif %}">
+                <div class="mission-category" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>{{ mission.status.value }}</span>
+                    <span style="font-size: 0.65rem; background: var(--gold); color: var(--white); padding: 2px 8px; border-radius: 50px; letter-spacing: 0.05em;">REAL</span>
+                </div>
+                <h4>{{ mission.title }}</h4>
+                <p>{{ mission.description[:100] }}{% if mission.description|length > 100 %}...{% endif %}</p>
+                <span class="mission-credits">{{ "{:,.0f}".format(mission.credit_value).replace(",", ".") }} Créditos</span>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="mission-showcase animate-up">
+                <div class="mission-category">Fotografia</div>
+                <h4>Fotos do Novo Menu</h4>
+                <p>Sessão fotográfica profissional para o menu de verão da cafeteria.</p>
+                <span class="mission-credits">800 Créditos</span>
+            </div>
+            <div class="mission-showcase animate-up delay-1">
+                <div class="mission-category">Arte & Design</div>
+                <h4>Design de Lousa</h4>
+                <p>Lettering criativo e arte chalk para a parede principal do salão.</p>
+                <span class="mission-credits">1.200 Créditos</span>
+            </div>
+            <div class="mission-showcase animate-up delay-2">
+                <div class="mission-category">Social Media</div>
+                <h4>Gestão de Instagram</h4>
+                <p>4 posts semanais + stories criativos durante 1 mês completo.</p>
+                <span class="mission-credits">2.500 Créditos</span>
+            </div>
+            <div class="mission-showcase animate-up delay-3">
+                <div class="mission-category">Música</div>
+                <h4>Música ao Vivo</h4>
+                <p>Apresentação acústica intimista de 2 horas na sexta-feira.</p>
+                <span class="mission-credits">1.500 Créditos</span>
+            </div>
+            <div class="mission-showcase animate-up delay-3">
+                <div class="mission-category">Educação</div>
+                <h4>Workshop de Barista</h4>
+                <p>Treinamento prático de métodos e latte art para equipe nova.</p>
+                <span class="mission-credits">2.000 Créditos</span>
+            </div>
+            <div class="mission-showcase animate-up delay-4">
+                <div class="mission-category">Eventos</div>
+                <h4>Degustação Guiada</h4>
+                <p>Curadoria e condução de cupping especial para clientes VIP.</p>
+                <span class="mission-credits">1.000 Créditos</span>
+            </div>
+        {% endif %}
     </div>
 </section>
 

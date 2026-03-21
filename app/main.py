@@ -39,17 +39,29 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/")
 async def home(request: Request):
-    user = None
-    user_id = request.session.get("user_id")
-    if user_id:
-        from app.core.db import SessionLocal
-        from app.models.user import User
-        db = SessionLocal()
-        try:
+    from app.core.db import SessionLocal
+    from app.models.user import User
+    from app.models.mission import Mission, MissionStatus
+
+    db = SessionLocal()
+    try:
+        user = None
+        user_id = request.session.get("user_id")
+        if user_id:
             user = db.query(User).filter(User.id == user_id).first()
-        finally:
-            db.close()
+
+        missions = (
+            db.query(Mission)
+            .filter(Mission.status == MissionStatus.OPEN)
+            .order_by(Mission.created_at.desc())
+            .limit(6)
+            .all()
+        )
+    finally:
+        db.close()
 
     return templates.TemplateResponse(
-        "landing.html", {"request": request, "user": user}
+        "landing.html",
+        {"request": request, "user": user, "missions": missions},
     )
+
