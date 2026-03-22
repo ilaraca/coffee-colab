@@ -9,6 +9,7 @@ class AuthService:
         self.db = db
 
     def authenticate_user(self, email: str, password: str) -> Optional[User]:
+        email = email.lower()
         user = users_repo.get_user_by_email(self.db, email)
         if not user:
             return None
@@ -17,6 +18,7 @@ class AuthService:
         return user
 
     def register_user(self, name: str, email: str, password: str, role: UserRole) -> User:
+        email = email.lower()
         existing_user = users_repo.get_user_by_email(self.db, email)
         if existing_user:
             raise ValueError("Email já cadastrado.")
