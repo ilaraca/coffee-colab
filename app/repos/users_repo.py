@@ -27,3 +27,10 @@ def verify_user_email(db: Session, user: User) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+def update_user_password(db: Session, user: User, new_password_hash: str) -> User:
+    user.password_hash = new_password_hash
+    db.commit()
+    db.refresh(user)
+    return user
+

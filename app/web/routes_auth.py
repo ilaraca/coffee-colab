@@ -4,10 +4,12 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.core.db import get_db
 from app.services.auth_service import AuthService
-from app.services.email_service import send_verification_email
-from app.core.tokens import confirm_verification_token
+from app.services.email_service import send_verification_email, send_password_reset_email
+from app.core.tokens import confirm_verification_token, confirm_password_reset_token
+from app.core.security import get_password_hash
 from app.repos import users_repo
 from app.models.user import UserRole
+import math
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -20,10 +22,11 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request: Request):
     error = request.session.pop("flash_error", None)
+    success = request.session.pop("flash_success", None)
     unverified_email = request.session.pop("unverified_email", None)
     return templates.TemplateResponse(
         "login.html",
-        {"request": request, "error": error, "unverified_email": unverified_email},
+        {"request": request, "login_error": error, "success": success, "unverified_email": unverified_email},
     )
 
 
@@ -150,6 +153,7 @@ async def verify_email(request: Request, token: str = "", db: Session = Depends(
     )
 
 
+
 @router.post("/resend-verification")
 async def resend_verification(
     request: Request,
@@ -167,3 +171,103 @@ async def resend_verification(
         url=f"/verify-email-sent?email={email.lower()}",
         status_code=status.HTTP_303_SEE_OTHER,
     )
+
+
+# ---------------------------------------------------------------------------
+# Forgot / Reset Password
+# ---------------------------------------------------------------------------
+
+@router.get("/forgot-password", response_class=HTMLResponse)
+async def forgot_password_page(request: Request):
+    error = request.session.pop("flash_error", None)
+    return templates.TemplateResponse(
+        "forgot_password.html",
+        {"request": request, "error": error},
+    )
+
+@router.post("/forgot-password")
+async def forgot_password(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    email: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    """
+    Handle password reset request.
+    Always redirect to "sent" page to avoid email enumeration.
+    """
+    email_clean = email.lower()
+    user = users_repo.get_user_by_email(db, email_clean)
+
+    if user:
+        if not user.email_verified:
+            # Optionally, don't allow reset if unverified, but sending the 
+            # verification email again is tricky from here. 
+            # Allowing password reset even for unverified emails could be okay, 
+            # since they prove ownership of the mailbox. But let's keep it simple.
+            pass
+        # Send password reset email
+        background_tasks.add_task(send_password_reset_email, email_clean)
+
+    return RedirectResponse(
+        url=f"/forgot-password-sent?email={email_clean}",
+        status_code=status.HTTP_303_SEE_OTHER,
+    )
+
+@router.get("/forgot-password-sent", response_class=HTMLResponse)
+async def forgot_password_sent_page(request: Request, email: str = ""):
+    return templates.TemplateResponse(
+        "forgot_password_sent.html",
+        {"request": request, "email": email},
+    )
+
+@router.get("/reset-password", response_class=HTMLResponse)
+async def reset_password_page(request: Request, token: str = ""):
+    error = request.session.pop("flash_error", None)
+    email = confirm_password_reset_token(token)
+
+    if not email:
+        # Invalid or expired token
+        return templates.TemplateResponse(
+            "forgot_password_sent.html",
+            {
+                "request": request,
+                "email": "",
+                "error": "Link inválido ou expirado. Por favor, solicite a redefinição de senha novamente.",
+            },
+        )
+
+    return templates.TemplateResponse(
+        "reset_password.html",
+        {"request": request, "token": token, "error": error},
+    )
+
+@router.post("/reset-password")
+async def reset_password(
+    request: Request,
+    token: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db),
+):
+    email = confirm_password_reset_token(token)
+
+    if not email:
+        request.session["flash_error"] = "Sessão expirada. Solicite a redefinição de senha."
+        return RedirectResponse(url="/forgot-password", status_code=status.HTTP_303_SEE_OTHER)
+
+    user = users_repo.get_user_by_email(db, email)
+    if not user:
+        request.session["flash_error"] = "Usuário não encontrado."
+        return RedirectResponse(url="/forgot-password", status_code=status.HTTP_303_SEE_OTHER)
+
+    # Hash the new password and save it
+    new_password_hash = get_password_hash(password)
+    users_repo.update_user_password(db, user, new_password_hash)
+
+    # Also mark email as verified if they reset their password, since they proved ownership
+    if not user.email_verified:
+        users_repo.verify_user_email(db, user)
+
+    request.session["flash_success"] = "Senha alterada com sucesso! Faça login com a nova senha."
+    return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
+
