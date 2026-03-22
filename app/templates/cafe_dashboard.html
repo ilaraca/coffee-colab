@@ -4,16 +4,52 @@
 <div class="header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
     <div>
         <h2 style="margin: 0;">Painel da Cafeteria</h2>
-        <p style="color: var(--sand);">Gerencie suas missões e aprove serviços.</p>
+        <p style="color: var(--sand);">
+            {% if cafe %}
+                Gestão de {{ cafe.name }}
+            {% else %}
+                Complete seu cadastro
+            {% endif %}
+        </p>
     </div>
+    {% if cafe %}
     <button onclick="document.getElementById('new-mission-form').style.display='block'" class="btn btn-primary">
         + Nova Missão
     </button>
+    {% endif %}
 </div>
 
-<!-- New Mission Form (Hidden by default or Modal) -->
+{% if not cafe %}
+<div class="form-card" style="margin-bottom: 2rem; border-left: 4px solid var(--gold);">
+    <h3 style="margin-bottom: 1rem;">Cadastre sua Cafeteria</h3>
+    <p style="color: var(--sand); margin-bottom: 1.5rem;">Antes de criar missões, precisamos saber mais sobre a sua cafeteria.</p>
+    
+    <form action="/cafe/register_profile" method="post">
+        <div class="form-group">
+            <label for="name">Nome da Cafeteria</label>
+            <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Modo Café">
+        </div>
+        <div class="form-group">
+            <label for="website_url">Link do Site (Opcional)</label>
+            <input type="url" id="website_url" name="website_url" class="form-control" placeholder="https://...">
+        </div>
+        <div class="form-group">
+            <label for="instagram_url">Link do Instagram ou Google Maps (Opcional mas recomendado)</label>
+            <input type="url" id="instagram_url" name="instagram_url" class="form-control" placeholder="https://instagram.com/...">
+        </div>
+        <button type="submit" class="btn btn-primary">Salvar Perfil</button>
+    </form>
+</div>
+{% else %}
+
+{% if not cafe.is_verified %}
+<div style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #ffeeba;">
+    <strong>☕ Em análise:</strong> O perfil da sua cafeteria está sendo verificado pela nossa equipe. Você pode criar missões para testar, mas elas só ficarão visíveis para os prestadores após a aprovação para garantir a segurança da comunidade.
+</div>
+{% endif %}
+
 <!-- New Mission Form -->
-<div id="new-mission-form" class="form-card" style="display: none;">
+<div id="new-mission-form" class="form-card" style="display: none; margin-bottom: 2rem;">
     <h3 class="mb-2">Nova Missão</h3>
     <form action="/cafe/missions" method="post">
         <div class="form-grid">
@@ -121,4 +157,5 @@
     <p style="color: var(--sand); text-align: center;">Nenhuma missão criada ainda.</p>
     {% endfor %}
 </div>
+{% endif %}
 {% endblock %}

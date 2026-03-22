@@ -42,6 +42,7 @@ async def home(request: Request):
     from app.core.db import SessionLocal
     from app.models.user import User
     from app.models.mission import Mission, MissionStatus
+    from app.models.cafe import Cafe
 
     db = SessionLocal()
     try:
@@ -52,7 +53,9 @@ async def home(request: Request):
 
         missions = (
             db.query(Mission)
+            .join(Mission.cafe)
             .filter(Mission.status == MissionStatus.OPEN)
+            .filter(Cafe.is_verified == True)
             .order_by(Mission.created_at.desc())
             .limit(6)
             .all()

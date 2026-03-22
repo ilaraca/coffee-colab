@@ -27,7 +27,13 @@ def seed():
         # 1. Cafe (Get or Create)
         cafe = db.query(Cafe).filter_by(slug="modo-cafe").first()
         if not cafe:
-            cafe = Cafe(name="Modo Café", slug="modo-cafe")
+            cafe = Cafe(
+                name="Modo Café", 
+                slug="modo-cafe",
+                website_url="https://modocafe.com.br",
+                instagram_url="https://instagram.com/modocafe",
+                is_verified=True
+            )
             db.add(cafe)
             db.commit()
             db.refresh(cafe)

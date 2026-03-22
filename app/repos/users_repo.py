@@ -15,3 +15,9 @@ def create_user(db: Session, user: User) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+def link_cafe_to_user(db: Session, user: User, cafe_id: uuid.UUID) -> User:
+    user.cafe_id = cafe_id
+    db.commit()
+    db.refresh(user)
+    return user

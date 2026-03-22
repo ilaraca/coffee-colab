@@ -648,8 +648,18 @@
                 <p>{{ mission.description[:100] }}{% if mission.description|length > 100 %}...{% endif %}</p>
                 <span class="mission-credits">{{ "{:,.0f}".format(mission.credit_value).replace(",", ".") }} Créditos</span>
                 {% if mission.cafe %}
-                <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--sand); display: flex; align-items: center; gap: 0.4rem;">
-                    <span>☕</span> {{ mission.cafe.name }}
+                <div style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--sand); display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                    <span>☕ {{ mission.cafe.name }}</span>
+                    {% if mission.cafe.website_url %}
+                        <a href="{{ mission.cafe.website_url }}" target="_blank" style="color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 0.2rem;" title="Site">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path><path d="M2 12h20"></path></svg>
+                        </a>
+                    {% endif %}
+                    {% if mission.cafe.instagram_url %}
+                        <a href="{{ mission.cafe.instagram_url }}" target="_blank" style="color: var(--terracotta); text-decoration: none; display: flex; align-items: center; gap: 0.2rem;" title="Instagram/Maps">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        </a>
+                    {% endif %}
                 </div>
                 {% endif %}
                 <div style="margin-top: 1rem;">
