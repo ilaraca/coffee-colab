@@ -48,7 +48,8 @@ def seed():
             name="Cafe Admin",
             email="admin@modocafe.local",
             password_hash=admin_pass,
-            role=UserRole.CAFE_ADMIN
+            role=UserRole.CAFE_ADMIN,
+            email_verified=True
         )
         db.add(admin)
         print(f"Created Admin: {admin.email}")
@@ -60,7 +61,8 @@ def seed():
             name="John Provider",
             email="provider@modocafe.local",
             password_hash=provider_pass,
-            role=UserRole.PROVIDER
+            role=UserRole.PROVIDER,
+            email_verified=True
         )
         # Note: If provider needs to interact with cafe, they just accept missions. 
         # But for 'transactions', we need a provider.

@@ -1,21 +1,59 @@
 {% extends "base.html" %}
 
+{% block title %}Entrar — Coffee Co-lab{% endblock %}
+
 {% block content %}
 <div style="max-width: 400px; margin: 4rem auto; text-align: center;">
     <h1>Bem-vindo de volta</h1>
     <p style="color: var(--sand); margin-bottom: 2rem;">Acesse sua conta para continuar.</p>
-    
+
+    {% if error %}
+    <div style="
+        background: rgba(220, 60, 60, 0.12);
+        border: 1px solid rgba(220, 60, 60, 0.35);
+        border-radius: 10px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.25rem;
+        color: #f87171;
+        font-size: 0.88rem;
+        text-align: left;
+    ">
+        <span>{{ error }}</span>
+
+        {% if unverified_email %}
+        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(220, 60, 60, 0.25);">
+            <p style="margin: 0 0 0.5rem; font-size: 0.82rem; color: #fca5a5;">
+                Não recebeu o e-mail de verificação?
+            </p>
+            <form method="post" action="/resend-verification" style="display: flex; gap: 0.4rem;">
+                <input type="hidden" name="email" value="{{ unverified_email }}">
+                <button type="submit" style="
+                    background: rgba(220, 60, 60, 0.2);
+                    border: 1px solid rgba(220, 60, 60, 0.4);
+                    color: #fca5a5;
+                    border-radius: 6px;
+                    padding: 0.35rem 0.9rem;
+                    font-size: 0.8rem;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                ">Reenviar e-mail</button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
     <form method="post" class="form-card" style="text-align: left;">
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" class="form-control" required>
         </div>
-        
+
         <div class="form-group">
             <label for="password">Senha</label>
             <input type="password" id="password" name="password" class="form-control" required>
         </div>
-        
+
         <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
     </form>
 
@@ -23,7 +61,7 @@
         <span style="color: var(--sand);">Não tem uma conta?</span>
         <a href="/register" style="color: var(--gold); text-decoration: none; font-weight: 600;">Cadastre-se</a>
     </div>
-    
+
     <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--sand);">
         <p>Credenciais Demo:</p>
         <p>admin@modocafe.local / Admin123!</p>

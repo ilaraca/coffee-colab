@@ -1,6 +1,6 @@
 import uuid
 import enum
-from sqlalchemy import Column, String, Enum, ForeignKey
+from sqlalchemy import Column, String, Enum, ForeignKey, Boolean
 from sqlalchemy.dialects.postgresql import UUID
 from app.core.db import Base
 from app.models.base import TimestampMixin
@@ -24,3 +24,5 @@ class User(Base, TimestampMixin):
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     role = Column(Enum(UserRole), nullable=False)
+    email_verified = Column(Boolean, default=False, nullable=False)
+

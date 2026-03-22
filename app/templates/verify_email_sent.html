@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Verifique seu e-mail — Coffee Co-lab{% endblock %}
+
+{% block content %}
+<div style="max-width: 480px; margin: 5rem auto; text-align: center;">
+
+    {% if error %}
+    <div style="
+        background: rgba(220, 60, 60, 0.12);
+        border: 1px solid rgba(220, 60, 60, 0.35);
+        border-radius: 10px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        color: #f87171;
+        font-size: 0.9rem;
+    ">{{ error }}</div>
+    {% endif %}
+
+    <div style="
+        width: 72px; height: 72px;
+        background: linear-gradient(135deg, #c8952a, #e8b84b);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 1.5rem;
+        font-size: 2rem;
+        box-shadow: 0 0 30px rgba(200, 149, 42, 0.3);
+    ">✉️</div>
+
+    <h1 style="font-family: 'Fraunces'; font-size: 1.8rem; margin-bottom: 0.75rem;">
+        Verifique seu e-mail
+    </h1>
+
+    {% if email %}
+    <p style="color: var(--sand); line-height: 1.7; margin-bottom: 2rem;">
+        Enviamos um link de confirmação para<br>
+        <strong style="color: var(--gold);">{{ email }}</strong><br><br>
+        Clique no link do e-mail para ativar sua conta.<br>
+        <span style="font-size: 0.85rem; opacity: 0.7;">O link expira em 24 horas.</span>
+    </p>
+    {% else %}
+    <p style="color: var(--sand); line-height: 1.7; margin-bottom: 2rem;">
+        Insira seu e-mail abaixo para receber um novo link de verificação.
+    </p>
+    {% endif %}
+
+    <!-- Resend form -->
+    <div style="
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    ">
+        <p style="color: var(--sand); font-size: 0.88rem; margin-bottom: 1rem;">
+            Não recebeu o e-mail? Verifique o spam ou reenvie:
+        </p>
+        <form method="post" action="/resend-verification" style="display: flex; gap: 0.5rem;">
+            <input
+                type="email"
+                name="email"
+                value="{{ email }}"
+                placeholder="seu@email.com"
+                class="form-control"
+                required
+                style="flex: 1; font-size: 0.9rem;"
+            >
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap; padding: 0.6rem 1.2rem;">
+                Reenviar
+            </button>
+        </form>
+    </div>
+
+    <a href="/login" style="color: var(--sand); font-size: 0.85rem; text-decoration: none;">
+        ← Voltar ao login
+    </a>
+</div>
+{% endblock %}

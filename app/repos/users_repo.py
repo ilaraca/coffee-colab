@@ -21,3 +21,9 @@ def link_cafe_to_user(db: Session, user: User, cafe_id: uuid.UUID) -> User:
     db.commit()
     db.refresh(user)
     return user
+
+def verify_user_email(db: Session, user: User) -> User:
+    user.email_verified = True
+    db.commit()
+    db.refresh(user)
+    return user
