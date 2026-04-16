@@ -19,4 +19,6 @@ fastapi-mail==1.4.1
 # Dev / Guardrails
 ruff
 pytest
+pytest-asyncio
 httpx
+aiosmtpd

@@ -1,7 +1,6 @@
 import uuid
 import enum
-from sqlalchemy import Column, String, Enum, ForeignKey, Boolean
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Enum, ForeignKey, Boolean, Uuid
 from app.core.db import Base
 from app.models.base import TimestampMixin
 
@@ -12,8 +11,8 @@ class UserRole(str, enum.Enum):
 class User(Base, TimestampMixin):
     __tablename__ = "users"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cafe_id = Column(UUID(as_uuid=True), ForeignKey("cafes.id"), nullable=True) # Admin belongs to a cafe context usually, providers might not initially but for this MVP simplicity we might keep it loose or null for global providers? 
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    cafe_id = Column(Uuid(as_uuid=True), ForeignKey("cafes.id"), nullable=True) # Admin belongs to a cafe context usually, providers might not initially but for this MVP simplicity we might keep it loose or null for global providers? 
     # Requirement S4: "Multi-tenant: Each record belongs to a cafe (cafe_id)"
     # However, providers might work across cafes. The prompt says "Seeds will have 1 cafe... Role-based access... PROVIDER accepts mission".
     # Usually providers are global. Let's make cafe_id nullable for providers, or specific if they are tied to one.

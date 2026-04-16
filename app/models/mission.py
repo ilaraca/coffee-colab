@@ -1,7 +1,6 @@
 import uuid
 import enum
-from sqlalchemy import Column, String, Integer, Enum, ForeignKey, Text
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import Column, String, Integer, Enum, ForeignKey, Text, Uuid
 from sqlalchemy.orm import relationship
 from app.core.db import Base
 from app.models.base import TimestampMixin
@@ -16,9 +15,9 @@ class MissionStatus(str, enum.Enum):
 class Mission(Base, TimestampMixin):
     __tablename__ = "missions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cafe_id = Column(UUID(as_uuid=True), ForeignKey("cafes.id"), nullable=False)
-    provider_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    cafe_id = Column(Uuid(as_uuid=True), ForeignKey("cafes.id"), nullable=False)
+    provider_id = Column(Uuid(as_uuid=True), ForeignKey("users.id"), nullable=True)
     
     title = Column(String, nullable=False)
     description = Column(Text, nullable=False)

@@ -35,3 +35,8 @@ ignore = []
 # Allow fix for all enabled rules (when `--fix` is provided).
 fixable = ["ALL"]
 unfixable = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
