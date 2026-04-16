@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MAIL_FROM: str = "noreply@coffeecolab.com"
     MAIL_SERVER: str = "sandbox.smtp.mailtrap.io"
     MAIL_PORT: int = 587
+    MAIL_STARTTLS: bool = True  # False para servidor SMTP local sem TLS (ex.: testes)
 
     # Base URL used in verification links
     APP_BASE_URL: str = "http://localhost:8000"
