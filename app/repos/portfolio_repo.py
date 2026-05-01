@@ -9,7 +9,7 @@ def create_portfolio_item(
     title: str,
     summary: str,
     category: str = "Geral",
-    hide_cafe_name: bool = True,
+    hide_business_name: bool = True,
     is_public: bool = False # Provider decides later, or default private
 ) -> PortfolioItem:
     item = PortfolioItem(
@@ -18,7 +18,7 @@ def create_portfolio_item(
         title=title,
         summary=summary,
         category=category,
-        hide_cafe_name=hide_cafe_name,
+        hide_business_name=hide_business_name,
         is_public=is_public
     )
     db.add(item)

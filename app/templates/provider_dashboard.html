@@ -71,7 +71,7 @@
                 <p style="color: var(--cocoa); margin: 0.5rem 0;">{{ mission.description }}</p>
                 
                 <form action="/provider/missions/{{ mission.id }}/accept" method="post" style="margin-top: 1rem;">
-                    <button type="submit" class="btn btn-primary">Aceitar Missão</button>
+                    <button type="submit" class="btn btn-primary" style="background: var(--gold); border: none; color: var(--ink);">Assumir Missão</button>
                 </form>
             </div>
             {% else %}
@@ -84,7 +84,13 @@
             <div class="mission-card status-{{ mission.status.value }}">
                 <div style="display: flex; justify-content: space-between;">
                     <h3 style="margin: 0;">{{ mission.title }}</h3>
-                    <span style="font-size: 0.8rem; font-weight: 600;">{{ mission.status.value }}</span>
+                    <span style="background: var(--latte); padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">
+                        {% if mission.status.value == 'OPEN' %}Aberta
+                        {% elif mission.status.value == 'ACCEPTED' %}Em Andamento
+                        {% elif mission.status.value == 'DONE' %}Avaliação Pendente
+                        {% elif mission.status.value == 'APPROVED' %}Concluída
+                        {% else %}{{ mission.status.value }}{% endif %}
+                    </span>
                 </div>
                 <p>{{ mission.description }}</p>
                 
@@ -96,7 +102,7 @@
                     <button type="submit" class="btn btn-primary" style="background: var(--gold);">Concluir Missão</button>
                 </form>
                 {% elif mission.status.value == 'DONE' %}
-                <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação da businessteria...</p>
+                <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação do estabelecimento...</p>
                 {% elif mission.status.value == 'APPROVED' %}
                 <p style="color: green; font-size: 0.9rem;">Aprovada! Créditos recebidos.</p>
                 {% endif %}

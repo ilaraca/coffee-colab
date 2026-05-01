@@ -101,7 +101,11 @@
         <div style="display: flex; justify-content: space-between;">
             <h3 style="margin: 0; font-size: 1.2rem;">{{ mission.title }}</h3>
             <span style="background: var(--latte); padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">
-                {{ mission.status.value }}
+                {% if mission.status.value == 'OPEN' %}Aberta
+                {% elif mission.status.value == 'ACCEPTED' %}Em Andamento
+                {% elif mission.status.value == 'DONE' %}Avaliação Pendente
+                {% elif mission.status.value == 'APPROVED' %}Concluída
+                {% else %}{{ mission.status.value }}{% endif %}
             </span>
         </div>
         <p style="color: var(--cocoa); margin: 0.5rem 0;">{{ mission.description }}</p>
