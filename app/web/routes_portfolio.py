@@ -28,30 +28,40 @@ async def public_portfolio(
     if not provider:
          raise HTTPException(404, "Provider not found")
          
-    # Get public items
-    # Repo helper needed? writing inline for speed or adding to repo.
-    # Logic: is_public = True AND mission.rating.allow_public = True (enforced at creation time usually, but should verify join?)
-    # My creation logic set is_public=allow_public initially but provider can toggle.
-    # But if cafe didn't allow, provider shouldn't be able to publicize.
-    # Current model `Rating.allow_public` exists. `PortfolioItem` has `is_public`.
-    # Let's assume `PortfolioItem.is_public` is the source of truth, but we should cross check if we want to be strict.
-    # For MVP: Trust `PortfolioItem.is_public` (which user toggles).
-    
+    # Get public items (with mission relationship eager-loaded)
     items = db.query(PortfolioItem).filter(
         PortfolioItem.provider_id == p_id,
         PortfolioItem.is_public == True  # noqa: E712
-    ).all()
+    ).order_by(PortfolioItem.created_at.desc()).all()
     
     # Calculate Avg Rating
-    # We need to query ratings for this provider.
     avg_score = db.query(func.avg(Rating.score)).filter(Rating.to_user_id == p_id).scalar()
-    avg_score = round(avg_score, 1) if avg_score else "Novato"
+    avg_score = round(avg_score, 1) if avg_score else None
+    
+    # Total completed missions (APPROVED)
+    from app.models.mission import Mission, MissionStatus
+    total_missions = db.query(func.count(Mission.id)).filter(
+        Mission.provider_id == p_id,
+        Mission.status == MissionStatus.APPROVED
+    ).scalar() or 0
+    
+    # Total ratings received
+    total_ratings = db.query(func.count(Rating.id)).filter(Rating.to_user_id == p_id).scalar() or 0
+    
+    # Build a dict of mission_id -> Rating for quick lookup in template
+    ratings_map = {}
+    ratings = db.query(Rating).filter(Rating.to_user_id == p_id).all()
+    for r in ratings:
+        ratings_map[str(r.mission_id)] = r
     
     return templates.TemplateResponse("portfolio_public.html", {
         "request": request,
         "provider": provider,
         "items": items,
-        "avg_score": avg_score
+        "avg_score": avg_score,
+        "total_missions": total_missions,
+        "total_ratings": total_ratings,
+        "ratings_map": ratings_map
     })
 
 @router.post("/provider/portfolio/{item_id}/toggle")

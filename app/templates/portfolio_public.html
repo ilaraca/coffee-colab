@@ -1,49 +1,658 @@
 {% extends "base.html" %}
 
-{% block content %}
-<div class="portfolio-header" style="text-align: center; margin-bottom: 3rem;">
-    <div style="width: 80px; height: 80px; background: var(--gold); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-family: 'Fraunces';">
-        {{ provider.name[0] }}
-    </div>
-    <h1 style="margin: 0;">{{ provider.name }}</h1>
-    <p style="color: var(--sand); margin-top: 0.5rem;">Prestador de Serviço Verificado</p>
-    
-    <div style="margin-top: 1rem; display: inline-block; background: var(--card); padding: 0.5rem 1.5rem; border-radius: 2rem; border: 1px solid var(--line);">
-        <span style="color: var(--gold); font-size: 1.2rem;">★</span> 
-        <span style="font-weight: 600; margin-left: 0.5rem;">{{ avg_score }}</span>
-    </div>
-</div>
+{% block title %}{{ provider.name }} — Portfólio | Modo Colab{% endblock %}
 
-<div class="portfolio-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-    {% for item in items %}
-    <div class="case-card" style="background: white; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; box-shadow: 4px 4px 0 var(--latte);">
-        <div style="padding: 1.5rem;">
-            <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 0.5rem;">
-                {{ item.category }}
+{% block content %}
+<style>
+    /* ── Portfolio Profile Page ─────────────────────────────── */
+    .pf-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+        padding-bottom: 4rem;
+    }
+
+    /* ── Profile Card ──────────────────────────────────────── */
+    .pf-profile-card {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(35, 26, 20, 0.06);
+        margin-bottom: 2rem;
+    }
+
+    .pf-cover {
+        height: 120px;
+        background: linear-gradient(135deg, var(--gold) 0%, var(--caramel) 50%, var(--cocoa) 100%);
+        position: relative;
+        border-radius: 16px 16px 0 0;
+        overflow: hidden;
+    }
+
+    .pf-cover::after {
+        content: '';
+        position: absolute;
+        right: 32px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 80px; height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+    }
+
+    .pf-avatar-row {
+        display: flex;
+        align-items: flex-start;
+        padding: 0 2rem;
+        margin-top: -48px;
+        gap: 1.25rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .pf-avatar {
+        width: 96px;
+        height: 96px;
+        background: var(--ink);
+        border-radius: 50%;
+        border: 4px solid var(--white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gold);
+        font-size: 2.2rem;
+        font-family: 'Fraunces', serif;
+        font-weight: 600;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(35, 26, 20, 0.12);
+    }
+
+    .pf-name-area {
+        padding-top: 52px;
+        flex: 1;
+    }
+
+    .pf-name {
+        font-family: 'Fraunces', serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    .pf-role {
+        color: var(--sand);
+        font-size: 0.85rem;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .pf-role .verified-icon {
+        color: var(--gold);
+        font-size: 0.9rem;
+    }
+
+    .pf-badges-row {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        padding-top: 52px;
+        flex-shrink: 0;
+    }
+
+    .pf-badge {
+        padding: 0.3rem 0.9rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        border: 1px solid var(--line);
+        background: var(--card);
+        color: var(--cocoa);
+        white-space: nowrap;
+    }
+
+    .pf-badge--gold {
+        background: linear-gradient(135deg, var(--gold), var(--caramel));
+        color: var(--white);
+        border-color: transparent;
+    }
+
+    /* ── Bio Section ───────────────────────────────────────── */
+    .pf-bio {
+        padding: 1.25rem 2rem 0;
+        color: var(--cocoa);
+        font-size: 0.92rem;
+        line-height: 1.6;
+    }
+
+    /* ── Stats Bar ─────────────────────────────────────────── */
+    .pf-stats {
+        display: flex;
+        padding: 1.5rem 2rem;
+        gap: 2rem;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .pf-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pf-stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .pf-stat-value {
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--ink);
+        line-height: 1.2;
+    }
+
+    .pf-stat-label {
+        font-size: 0.72rem;
+        color: var(--sand);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* ── Tabs ──────────────────────────────────────────────── */
+    .pf-tabs {
+        display: flex;
+        padding: 0 2rem;
+        gap: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .pf-tab {
+        padding: 0.9rem 1.5rem;
+        font-size: 0.88rem;
+        font-weight: 500;
+        color: var(--sand);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
+        background: none;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .pf-tab:hover {
+        color: var(--ink);
+    }
+
+    .pf-tab--active {
+        color: var(--ink);
+        border-bottom-color: var(--gold);
+        font-weight: 600;
+    }
+
+    /* ── Tab Content Panels ────────────────────────────────── */
+    .pf-panel {
+        display: none;
+        padding: 1.5rem 2rem 2rem;
+    }
+
+    .pf-panel--active {
+        display: block;
+    }
+
+    /* ── Experience / Cases Section ─────────────────────────── */
+    .pf-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .pf-section-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+        color: var(--ink);
+    }
+
+    .pf-section-count {
+        color: var(--sand);
+        font-size: 0.85rem;
+        font-weight: 400;
+    }
+
+    /* ── Case Card (Job Item) ──────────────────────────────── */
+    .pf-case {
+        background: var(--white);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .pf-case:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(35, 26, 20, 0.08);
+    }
+
+    .pf-case-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .pf-case-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--gold), var(--caramel));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .pf-case-meta {
+        flex: 1;
+    }
+
+    .pf-case-title {
+        font-family: 'Fraunces', serif;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin: 0 0 2px;
+        color: var(--ink);
+    }
+
+    .pf-case-subtitle {
+        font-size: 0.8rem;
+        color: var(--sand);
+    }
+
+    .pf-case-date {
+        font-size: 0.78rem;
+        color: var(--sand);
+        white-space: nowrap;
+        margin-left: auto;
+        padding-left: 1rem;
+    }
+
+    .pf-case-body {
+        font-size: 0.88rem;
+        color: var(--cocoa);
+        line-height: 1.65;
+        padding: 0.75rem 0;
+        border-top: 1px solid var(--cream);
+    }
+
+    .pf-case-body blockquote {
+        margin: 0;
+        padding: 0.75rem 1rem;
+        border-left: 3px solid var(--gold);
+        background: var(--cream);
+        border-radius: 0 6px 6px 0;
+        font-style: italic;
+        color: var(--cocoa);
+    }
+
+    .pf-case-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--cream);
+        font-size: 0.82rem;
+    }
+
+    .pf-case-business {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--sand);
+    }
+
+    .pf-case-rating {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .pf-star {
+        color: var(--gold);
+        font-size: 0.85rem;
+    }
+
+    .pf-star--empty {
+        color: var(--line);
+    }
+
+    .pf-case-credits {
+        background: var(--cream);
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        font-weight: 600;
+        color: var(--gold);
+        font-size: 0.78rem;
+    }
+
+    /* ── About Tab ─────────────────────────────────────────── */
+    .pf-about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .pf-about-item {
+        background: var(--cream);
+        padding: 1.25rem;
+        border-radius: 10px;
+    }
+
+    .pf-about-item-label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--sand);
+        margin-bottom: 0.25rem;
+    }
+
+    .pf-about-item-value {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--ink);
+    }
+
+    /* ── Empty State ───────────────────────────────────────── */
+    .pf-empty {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--sand);
+    }
+
+    .pf-empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+    }
+
+    .pf-empty-text {
+        font-size: 0.95rem;
+    }
+
+    /* ── Responsive ────────────────────────────────────────── */
+    @media (max-width: 640px) {
+        .pf-avatar-row {
+            padding: 0 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .pf-badges-row {
+            width: 100%;
+            justify-content: flex-start;
+            margin-top: 0.5rem;
+        }
+
+        .pf-stats {
+            padding: 1rem 1.25rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .pf-tabs {
+            padding: 0 1rem;
+            overflow-x: auto;
+        }
+
+        .pf-panel {
+            padding: 1.25rem;
+        }
+
+        .pf-case-header {
+            flex-wrap: wrap;
+        }
+
+        .pf-case-date {
+            margin-left: 0;
+            padding-left: 0;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+
+        .pf-about-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="pf-wrapper">
+    <!-- ── Profile Card ──────────────────────────────── -->
+    <div class="pf-profile-card">
+        <!-- Cover gradient -->
+        <div class="pf-cover"></div>
+
+        <!-- Avatar + Name + Badges -->
+        <div class="pf-avatar-row">
+            <div class="pf-avatar">{{ provider.name[0] }}</div>
+            <div class="pf-name-area">
+                <h1 class="pf-name">{{ provider.name }}</h1>
+                <div class="pf-role">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+                    Prestador Verificado
+                </div>
             </div>
-            <h3 style="margin: 0; font-family: 'Fraunces'; font-size: 1.4rem;">{{ item.title }}</h3>
-            <p style="color: var(--cocoa); line-height: 1.5; margin-top: 1rem;">
-                "{{ item.summary }}"
-            </p>
-            
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--cream); font-size: 0.9rem; color: var(--sand); display: flex; justify-content: space-between;">
-                <span>
-                    {% if item.hide_cafe_name %}
-                        Cafeteria Parceira
-                    {% else %}
-                        Modo Café <!-- Hardcoded for MVP if model join tricky, but assuming we can fetch name? item.mission... -->
-                        <!-- Actually PortfolioItem has mission_id. We can join mission->cafe. -->
-                        <!-- For MVP, simplify "Cafeteria Parceira" default. -->
-                    {% endif %}
-                </span>
-                <span>Verificado ✓</span>
+            <div class="pf-badges-row">
+                {% if avg_score %}
+                <span class="pf-badge pf-badge--gold">{{ avg_score }} / 5</span>
+                {% else %}
+                <span class="pf-badge">Novato</span>
+                {% endif %}
+                <span class="pf-badge">Portfólio Público</span>
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="pf-stats">
+            <div class="pf-stat">
+                <div class="pf-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                </div>
+                <div>
+                    <div class="pf-stat-value">{{ total_missions }}</div>
+                    <div class="pf-stat-label">Missões</div>
+                </div>
+            </div>
+            <div class="pf-stat">
+                <div class="pf-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                </div>
+                <div>
+                    <div class="pf-stat-value">{{ total_ratings }}</div>
+                    <div class="pf-stat-label">Avaliações</div>
+                </div>
+            </div>
+            <div class="pf-stat">
+                <div class="pf-stat-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div>
+                    <div class="pf-stat-value">{{ items|length }}</div>
+                    <div class="pf-stat-label">Publicados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="pf-tabs" id="pf-tabs">
+            <button class="pf-tab pf-tab--active" data-tab="experience" onclick="switchTab('experience')">Experiência</button>
+            <button class="pf-tab" data-tab="about" onclick="switchTab('about')">Sobre</button>
+        </div>
+
+        <!-- ── Tab: Experience ──────────────────────── -->
+        <div class="pf-panel pf-panel--active" id="panel-experience">
+            <div class="pf-section-header">
+                <h2 class="pf-section-title">
+                    Histórico de Projetos 
+                    <span class="pf-section-count">{{ items|length }} projeto{{ 's' if items|length != 1 else '' }}</span>
+                </h2>
+            </div>
+
+            {% for item in items %}
+            {% set rating = ratings_map.get(item.mission_id|string) %}
+            <div class="pf-case">
+                <div class="pf-case-header">
+                    <div class="pf-case-icon">
+                        {% if item.category in ['Design'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                        {% elif item.category in ['Photo', 'Fotografia', 'Foto'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        {% elif item.category in ['Social Media', 'Redes Sociais'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                        {% elif item.category in ['Dev', 'Desenvolvimento', 'Programação'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        {% elif item.category in ['Video', 'Vídeo', 'Edição'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+                        {% elif item.category in ['Copywriting', 'Redação', 'Escrita'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        {% elif item.category in ['SEO', 'Marketing'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        {% elif item.category in ['Music', 'Música', 'Evento'] %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+                        {% else %}
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        {% endif %}
+                    </div>
+                    <div class="pf-case-meta">
+                        <h3 class="pf-case-title">{{ item.title }}</h3>
+                        <div class="pf-case-subtitle">
+                            {% if item.hide_business_name %}
+                                Estabelecimento Parceira
+                            {% elif item.mission and item.mission.business %}
+                                {{ item.mission.business.name }}
+                            {% else %}
+                                Estabelecimento Parceira
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {% if item.summary %}
+                <div class="pf-case-body">
+                    <blockquote>"{{ item.summary }}"</blockquote>
+                </div>
+                {% endif %}
+
+                <div class="pf-case-footer">
+                    <div class="pf-case-business">
+                        <span>
+                            {% if item.category == 'Photo' %}Fotografia
+                            {% elif item.category == 'Social Media' %}Redes Sociais
+                            {% elif item.category == 'Dev' %}Desenvolvimento
+                            {% elif item.category == 'Video' %}Vídeo
+                            {% elif item.category == 'Copywriting' %}Redação
+                            {% elif item.category == 'SEO' %}Marketing Local
+                            {% elif item.category == 'Music' %}Música/Eventos
+                            {% else %}{{ item.category or 'Serviço' }}{% endif %}
+                        </span>
+                        <span>·</span>
+                        <span>Verificado</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        {% if rating %}
+                        <div class="pf-case-rating">
+                            {% for i in range(5) %}
+                                {% if i < rating.score %}
+                                <span class="pf-star">▪</span>
+                                {% else %}
+                                <span class="pf-star pf-star--empty">▪</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if item.mission %}
+                        <span class="pf-case-credits">{{ item.mission.credit_value }} créditos</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="pf-empty">
+                <div class="pf-empty-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--sand)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                </div>
+                <p class="pf-empty-text">Este prestador ainda não publicou cases no portfólio.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- ── Tab: About ───────────────────────────── -->
+        <div class="pf-panel" id="panel-about">
+            <div class="pf-section-header">
+                <h2 class="pf-section-title">Sobre {{ provider.name }}</h2>
+            </div>
+
+            <div class="pf-about-grid">
+                <div class="pf-about-item">
+                    <div class="pf-about-item-label">Missões Completas</div>
+                    <div class="pf-about-item-value">{{ total_missions }}</div>
+                </div>
+                <div class="pf-about-item">
+                    <div class="pf-about-item-label">Avaliações Recebidas</div>
+                    <div class="pf-about-item-value">{{ total_ratings }}</div>
+                </div>
+                <div class="pf-about-item">
+                    <div class="pf-about-item-label">Nota Média</div>
+                    <div class="pf-about-item-value">
+                        {% if avg_score %}
+                            {{ avg_score }} / 5.0
+                        {% else %}
+                            Ainda sem avaliações
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="pf-about-item">
+                    <div class="pf-about-item-label">Status</div>
+                    <div class="pf-about-item-value" style="color: var(--success);">Verificado</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: var(--cream); border-radius: 10px; border-left: 3px solid var(--gold);">
+                <p style="margin: 0; color: var(--cocoa); font-size: 0.9rem; line-height: 1.6;">
+                    <strong style="color: var(--ink);">Modo Colab</strong> — Este profissional faz parte da comunidade de talentos que colaboram com estabelecimentos independentes, 
+                    trocando habilidades por experiência real e créditos consumíveis. Cada projeto listado foi verificado e avaliado por uma businessteria parceira.
+                </p>
             </div>
         </div>
     </div>
-    {% else %}
-    <div style="grid-column: 1/-1; text-align: center; color: var(--sand);">
-        <p>Este prestador ainda não publicou cases.</p>
-    </div>
-    {% endfor %}
 </div>
+
+<script>
+function switchTab(tabName) {
+    // Deactivate all tabs
+    document.querySelectorAll('.pf-tab').forEach(t => t.classList.remove('pf-tab--active'));
+    document.querySelectorAll('.pf-panel').forEach(p => p.classList.remove('pf-panel--active'));
+
+    // Activate selected
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('pf-tab--active');
+    document.getElementById(`panel-${tabName}`).classList.add('pf-panel--active');
+}
+</script>
 {% endblock %}

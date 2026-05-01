@@ -1,39 +1,51 @@
 {% extends "base.html" %}
 
+{% block title %}Criar Conta — Modo Colab{% endblock %}
+
 {% block content %}
-<div style="max-width: 400px; margin: 4rem auto; text-align: center;">
-    <h1>Crie sua conta</h1>
-    <p style="color: var(--sand); margin-bottom: 2rem;">Junte-se à comunidade Coffee Co-lab.</p>
-    
-    <form method="post" action="/register" class="form-card" style="text-align: left;">
-        <div class="form-group">
-            <label for="name">Nome Completo</label>
-            <input type="text" id="name" name="name" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="password">Senha</label>
-            <input type="password" id="password" name="password" class="form-control" required minlength="6">
-        </div>
-
-        <div class="form-group">
-            <label for="role">Tipo de Conta</label>
-            <select id="role" name="role" class="form-control" required>
-                <option value="PROVIDER">Prestador (Quero missões)</option>
-                <option value="CAFE_ADMIN">Cafeteria (Quero cadastrar missões)</option>
-            </select>
-        </div>
-        
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Cadastrar</button>
-    </form>
-    
-    <div style="margin-top: 1.5rem; font-size: 0.9rem;">
-        <a href="/login" style="color: var(--gold); text-decoration: none; font-weight: 600;">Já tem uma conta? Entrar</a>
+<div class="animate-up" style="max-width: 520px; margin: 6rem auto;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <div class="status-badge" style="margin-bottom: 1rem;">JUNTE-SE À ELITE LOCAL</div>
+        <h1 style="margin-bottom: 0.5rem;">Sua jornada começa aqui</h1>
+        <p style="color: var(--sand);">Crie sua conta no Modo Colab e comece a transformar talento em experiências.</p>
     </div>
+    
+    <div class="form-card">
+        <form method="post" action="/register">
+            <div class="form-group">
+                <label for="name">Nome Completo ou Nome Artístico</label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Como devemos te chamar?">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Seu melhor E-mail</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="seu@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Crie uma Senha Forte</label>
+                <input type="password" id="password" name="password" class="form-control" required minlength="6" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <div class="form-group">
+                <label for="role">Como você usará a plataforma?</label>
+                <select id="role" name="role" class="form-control" required style="cursor: pointer; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23b8a99a%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'); background-repeat: no-repeat; background-position: right 1rem top 50%; background-size: 0.65rem auto;">
+                    <option value="PROVIDER">Sou Talento Local (Quero missões)</option>
+                    <option value="BUSINESS_ADMIN">Sou um Estabelecimento (Quero talentos)</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-gold" style="width: 100%; margin-top: 1.5rem;">Criar Minha Conta Gratuita</button>
+        </form>
+    </div>
+    
+    <div style="margin-top: 2rem; text-align: center; font-size: 0.95rem;">
+        <span style="color: var(--sand);">Já faz parte da rede?</span>
+        <a href="/login" style="color: var(--gold); font-weight: 700; margin-left: 0.5rem;">Entrar agora</a>
+    </div>
+
+    <p style="margin-top: 4rem; text-align: center; font-size: 0.8rem; color: var(--sand); line-height: 1.6;">
+        Ao se cadastrar, você concorda com nossos <a href="#" style="text-decoration: underline;">Termos de Uso</a> e <a href="#" style="text-decoration: underline;">Política de Privacidade</a>.
+    </p>
 </div>
 {% endblock %}

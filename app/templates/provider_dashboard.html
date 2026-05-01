@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
 <style>
     .tab-link {
         padding-bottom: 0.5rem;
@@ -95,7 +96,7 @@
                     <button type="submit" class="btn btn-primary" style="background: var(--gold);">Concluir Missão</button>
                 </form>
                 {% elif mission.status.value == 'DONE' %}
-                <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação da cafeteria...</p>
+                <p style="color: var(--gold); font-size: 0.9rem;">Aguardando aprovação da businessteria...</p>
                 {% elif mission.status.value == 'APPROVED' %}
                 <p style="color: green; font-size: 0.9rem;">Aprovada! Créditos recebidos.</p>
                 {% endif %}
@@ -204,4 +205,6 @@
 
     {% endif %}
 </div>
+</div>
 {% endblock %}
+

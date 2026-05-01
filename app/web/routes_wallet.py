@@ -57,18 +57,18 @@ async def generate_token(
     user = Depends(get_provider),
     db: Session = Depends(get_db)
 ):
-    # Need cafe_id. How do we know which cafe?
-    # MVP: Form should select Cafe?
-    # Or we default to the only cafe "Modo Cafe".
-    from app.models.cafe import Cafe
-    cafe = db.query(Cafe).first() 
-    if not cafe:
-        raise HTTPException(500, "No cafe found")
+    # Need business_id. How do we know which business?
+    # MVP: Form should select Business?
+    # Or we default to the first business.
+    from app.models.business import Business
+    business = db.query(Business).first() 
+    if not business:
+        raise HTTPException(500, "No business found")
         
     service = RedeemService(db)
     
     try:
-        raw_token, token_obj = service.generate_token(user.id, cafe.id, amount)
+        raw_token, token_obj = service.generate_token(user.id, business.id, amount)
         qr_url = service.generate_qr_image(f"{request.base_url}redeem/{raw_token}")
         
         # Show success page with QR INSIDE Validator Dashboard
@@ -77,7 +77,7 @@ async def generate_token(
             "user": user,
             "tab": "wallet",
             "transactions": wallet_repo.get_transactions(db, user.id),
-            "balance": wallet_repo.get_balance(db, user.id, cafe.id),
+            "balance": wallet_repo.get_balance(db, user.id, business.id),
             "new_qr": qr_url,
             "new_token_expiry": token_obj.expires_at,
             "redeem_link": f"{request.base_url}redeem/{raw_token}"

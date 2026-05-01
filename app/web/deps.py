@@ -15,9 +15,9 @@ def get_current_active_user(user = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return user
 
-def get_cafe_admin(user = Depends(get_current_active_user)):
-    if user.role.value != "CAFE_ADMIN":
-         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Requires Cafe Admin")
+def get_business_admin(user = Depends(get_current_active_user)):
+    if user.role.value != "BUSINESS_ADMIN":
+         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Requires Business Admin")
     return user
 
 def get_provider(user = Depends(get_current_active_user)):

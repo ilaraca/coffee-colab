@@ -9,7 +9,7 @@ from app.core.tokens import confirm_verification_token, confirm_password_reset_t
 from app.core.security import get_password_hash
 from app.repos import users_repo
 from app.models.user import UserRole
-import math
+
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -55,8 +55,8 @@ async def login(
     request.session["role"] = user.role.value
     request.session["name"] = user.name
 
-    if user.role.value == "CAFE_ADMIN":
-        return RedirectResponse(url="/cafe", status_code=status.HTTP_303_SEE_OTHER)
+    if user.role.value == "BUSINESS_ADMIN":
+        return RedirectResponse(url="/business", status_code=status.HTTP_303_SEE_OTHER)
     else:
         return RedirectResponse(url="/provider", status_code=status.HTTP_303_SEE_OTHER)
 

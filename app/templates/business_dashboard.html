@@ -1,33 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
 <div class="header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
     <div>
-        <h2 style="margin: 0;">Painel da Cafeteria</h2>
+        <h2 style="margin: 0;">Painel do Estabelecimento</h2>
         <p style="color: var(--sand);">
-            {% if cafe %}
-                Gestão de {{ cafe.name }}
+            {% if business %}
+                Gestão de {{ business.name }}
             {% else %}
                 Complete seu cadastro
             {% endif %}
         </p>
     </div>
-    {% if cafe %}
+    {% if business %}
     <button onclick="document.getElementById('new-mission-form').style.display='block'" class="btn btn-primary">
         + Nova Missão
     </button>
     {% endif %}
 </div>
 
-{% if not cafe %}
+{% if not business %}
 <div class="form-card" style="margin-bottom: 2rem; border-left: 4px solid var(--gold);">
-    <h3 style="margin-bottom: 1rem;">Cadastre sua Cafeteria</h3>
-    <p style="color: var(--sand); margin-bottom: 1.5rem;">Antes de criar missões, precisamos saber mais sobre a sua cafeteria.</p>
+    <h3 style="margin-bottom: 1rem;">Cadastre seu Estabelecimento</h3>
+    <p style="color: var(--sand); margin-bottom: 1.5rem;">Antes de criar missões, precisamos saber mais sobre o seu negócio.</p>
     
-    <form action="/cafe/register_profile" method="post">
-        <div class="form-group">
-            <label for="name">Nome da Cafeteria</label>
-            <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Modo Café">
+    <form action="/business/register_profile" method="post">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="name">Nome do Estabelecimento</label>
+                <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Modo Colab">
+            </div>
+            <div class="form-group">
+                <label for="category">Categoria</label>
+                <select id="category" name="category" class="form-control" required>
+                    <option value="" disabled selected>Selecione uma categoria</option>
+                    <option value="Cafe">Cafeteria</option>
+                    <option value="Restaurante">Restaurante</option>
+                    <option value="Padaria">Padaria / Confeitaria</option>
+                    <option value="Bar">Bar / Pub</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
         </div>
         <div class="form-group">
             <label for="website_url">Link do Site (Opcional)</label>
@@ -42,16 +56,19 @@
 </div>
 {% else %}
 
-{% if not cafe.is_verified %}
-<div style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #ffeeba;">
-    <strong>☕ Em análise:</strong> O perfil da sua cafeteria está sendo verificado pela nossa equipe. Você pode criar missões para testar, mas elas só ficarão visíveis para os prestadores após a aprovação para garantir a segurança da comunidade.
+{% if not business.is_verified %}
+<div style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #ffeeba; display:flex; align-items:flex-start; gap:0.5rem;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:0.1rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <div>
+        <strong>Em análise:</strong> O perfil do seu estabelecimento está sendo verificado pela nossa equipe. Você pode criar missões para testar, mas elas só ficarão visíveis para os prestadores após a aprovação para garantir a segurança da comunidade.
+    </div>
 </div>
 {% endif %}
 
 <!-- New Mission Form -->
 <div id="new-mission-form" class="form-card" style="display: none; margin-bottom: 2rem;">
     <h3 class="mb-2">Nova Missão</h3>
-    <form action="/cafe/missions" method="post">
+    <form action="/business/missions" method="post">
         <div class="form-grid">
             <div class="form-group">
                 <label for="title">Título da Missão</label>
@@ -118,7 +135,7 @@
                 
                 <!-- Simple Inline Modal for Approval -->
                 <div id="approve-{{ mission.id }}" class="form-card" style="display: none; margin-top: 1rem; border: 1px dashed var(--gold); background: var(--cream);">
-                    <form action="/cafe/missions/{{ mission.id }}/approve" method="post">
+                    <form action="/business/missions/{{ mission.id }}/approve" method="post">
                         <div class="form-group">
                             <label>Nota (1-5)</label>
                             <select name="score" class="form-control" required>
@@ -158,4 +175,5 @@
     {% endfor %}
 </div>
 {% endif %}
+</div>
 {% endblock %}

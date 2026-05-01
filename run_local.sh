@@ -7,7 +7,7 @@ set -e
 export DATABASE_URL="postgresql://user:password@localhost:5433/coffeecolab"
 
 echo "========================================"
-echo "☕️ Coffee Co-lab: Local Runner"
+echo "🚀 Modo Colab: Local Runner"
 echo "========================================"
 
 # Check for --setup flag

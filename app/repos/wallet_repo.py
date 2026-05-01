@@ -5,7 +5,7 @@ from app.models.transaction import Transaction, TransactionType, TransactionStat
 
 def create_transaction(
     db: Session, 
-    cafe_id: uuid.UUID, 
+    business_id: uuid.UUID, 
     to_user_id: uuid.UUID, 
     amount: int, 
     type: TransactionType, 
@@ -13,7 +13,7 @@ def create_transaction(
     from_user_id: Optional[uuid.UUID] = None
 ) -> Transaction:
     tx = Transaction(
-        cafe_id=cafe_id,
+        business_id=business_id,
         to_user_id=to_user_id,
         from_user_id=from_user_id,
         amount=amount,
@@ -26,18 +26,18 @@ def create_transaction(
     db.refresh(tx)
     return tx
 
-def get_balance(db: Session, user_id: uuid.UUID, cafe_id: uuid.UUID) -> int:
-    # Balance = SUM(EARN) - SUM(SPEND) for this provider at this cafe
+def get_balance(db: Session, user_id: uuid.UUID, business_id: uuid.UUID) -> int:
+    # Balance = SUM(EARN) - SUM(SPEND) for this provider at this business
     # Note: user_id is the provider (to_user_id in EARN, but in SPEND is it to or from?)
     # In my model note: "EARN: to_user_id = provider", "SPEND: to_user_id = provider" (because it tracks THEIR wallet balance decrement).
     # Let's verify Transaction model notes I wrote:
     # "EARN: to_user_id = provider (+ amount)"
     # "SPEND: to_user_id = provider (- amount)"
-    # So we query all transactions where to_user_id == user_id and cafe_id == cafe_id.
+    # So we query all transactions where to_user_id == user_id and business_id == business_id.
     
     txs = db.query(Transaction).filter(
         Transaction.to_user_id == user_id,
-        Transaction.cafe_id == cafe_id,
+        Transaction.business_id == business_id,
         Transaction.status == TransactionStatus.CONFIRMED
     ).all()
     

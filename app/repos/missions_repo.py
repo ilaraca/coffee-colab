@@ -4,9 +4,9 @@ from typing import List, Optional
 import uuid
 from app.models.mission import Mission, MissionStatus
 
-def create_mission(db: Session, cafe_id: uuid.UUID, title: str, description: str, credit_value: int) -> Mission:
+def create_mission(db: Session, business_id: uuid.UUID, title: str, description: str, credit_value: int) -> Mission:
     mission = Mission(
-        cafe_id=cafe_id,
+        business_id=business_id,
         title=title,
         description=description,
         credit_value=credit_value,
@@ -17,13 +17,13 @@ def create_mission(db: Session, cafe_id: uuid.UUID, title: str, description: str
     db.refresh(mission)
     return mission
 
-def get_missions_by_cafe(db: Session, cafe_id: uuid.UUID) -> List[Mission]:
-    return db.query(Mission).filter(Mission.cafe_id == cafe_id).order_by(desc(Mission.created_at)).all()
+def get_missions_by_business(db: Session, business_id: uuid.UUID) -> List[Mission]:
+    return db.query(Mission).filter(Mission.business_id == business_id).order_by(desc(Mission.created_at)).all()
 
-def get_open_missions(db: Session, cafe_id: Optional[uuid.UUID] = None) -> List[Mission]:
+def get_open_missions(db: Session, business_id: Optional[uuid.UUID] = None) -> List[Mission]:
     query = db.query(Mission).filter(Mission.status == MissionStatus.OPEN)
-    if cafe_id:
-        query = query.filter(Mission.cafe_id == cafe_id)
+    if business_id:
+        query = query.filter(Mission.business_id == business_id)
     return query.order_by(desc(Mission.created_at)).all()
 
 def get_missions_for_provider(db: Session, provider_id: uuid.UUID) -> List[Mission]:

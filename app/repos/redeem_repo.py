@@ -6,14 +6,14 @@ from app.models.redeem import RedeemToken, TokenStatus
 
 def create_token(
     db: Session,
-    cafe_id: uuid.UUID,
+    business_id: uuid.UUID,
     provider_id: uuid.UUID,
     token_hash: str,
     amount: int,
     expires_at: datetime
 ) -> RedeemToken:
     token = RedeemToken(
-        cafe_id=cafe_id,
+        business_id=business_id,
         provider_id=provider_id,
         token_hash=token_hash,
         amount=amount,

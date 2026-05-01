@@ -1,5 +1,6 @@
 import uuid
 from sqlalchemy import Column, String, Boolean, ForeignKey, Text, Uuid
+from sqlalchemy.orm import relationship
 from app.core.db import Base
 from app.models.base import TimestampMixin
 
@@ -15,4 +16,7 @@ class PortfolioItem(Base, TimestampMixin):
     category = Column(String, nullable=True)
     
     is_public = Column(Boolean, default=False) # Provider toggle
-    hide_cafe_name = Column(Boolean, default=True) # Privacy
+    hide_business_name = Column(Boolean, default=True) # Privacy
+
+    # Relationships
+    mission = relationship("Mission", foreign_keys=[mission_id], lazy="joined")

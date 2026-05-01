@@ -16,8 +16,8 @@ def create_user(db: Session, user: User) -> User:
     db.refresh(user)
     return user
 
-def link_cafe_to_user(db: Session, user: User, cafe_id: uuid.UUID) -> User:
-    user.cafe_id = cafe_id
+def link_business_to_user(db: Session, user: User, business_id: uuid.UUID) -> User:
+    user.business_id = business_id
     db.commit()
     db.refresh(user)
     return user

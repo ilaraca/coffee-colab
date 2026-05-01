@@ -9,7 +9,7 @@ from alembic import context
 from app.core.config import settings
 from app.core.db import Base
 # Import all models to register them with Base.metadata
-from app.models.cafe import Cafe
+from app.models.business import Business
 from app.models.user import User
 from app.models.mission import Mission
 from app.models.rating import Rating

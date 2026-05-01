@@ -12,7 +12,7 @@ class MissionService:
     def approve_mission(
         self, 
         mission_id: uuid.UUID, 
-        cafe_admin_id: uuid.UUID,
+        business_admin_id: uuid.UUID,
         score: int,
         recommendation_text: str,
         allow_public: bool
@@ -31,7 +31,7 @@ class MissionService:
         ratings_repo.create_rating(
             self.db,
             mission_id=mission.id,
-            from_user_id=cafe_admin_id,
+            from_user_id=business_admin_id,
             to_user_id=mission.provider_id,
             score=score,
             recommendation_text=recommendation_text,
@@ -41,7 +41,7 @@ class MissionService:
         # 3. Create Transaction (EARN)
         wallet_repo.create_transaction(
             self.db,
-            cafe_id=mission.cafe_id,
+            business_id=mission.business_id,
             to_user_id=mission.provider_id,
             amount=mission.credit_value,
             type=TransactionType.EARN,
@@ -58,7 +58,7 @@ class MissionService:
             title=mission.title,
             summary=recommendation_text, 
             category="Service", # Placeholder
-            hide_cafe_name=True, # Default per spec
+            hide_business_name=True, # Default per spec
             is_public=allow_public # If cafe allows public, we initially set it? 
             # Spec: "provider pode marcar... item como publico/privado. allow_public da cafeteria controla se PODE aparecer publicamente"
             # So provider toggle controls visibility, but cafe allow_public controls eligibility.

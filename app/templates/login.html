@@ -1,89 +1,64 @@
 {% extends "base.html" %}
 
-{% block title %}Entrar — Coffee Co-lab{% endblock %}
+{% block title %}Entrar — Modo Colab{% endblock %}
 
 {% block content %}
-<div style="max-width: 400px; margin: 4rem auto; text-align: center;">
-    <h1>Bem-vindo de volta</h1>
-    <p style="color: var(--sand); margin-bottom: 2rem;">Acesse sua conta para continuar.</p>
+<div class="animate-up" style="max-width: 480px; margin: 6rem auto;">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="margin-bottom: 0.5rem;">Bem-vindo de volta</h1>
+        <p style="color: var(--sand);">Acesse sua conta para continuar a colaborar.</p>
+    </div>
 
     {% if success %}
-    <div style="
-        background: rgba(46, 160, 67, 0.12);
-        border: 1px solid rgba(46, 160, 67, 0.35);
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.25rem;
-        color: #3fb950;
-        font-size: 0.88rem;
-        text-align: left;
-    ">
-        <span>{{ success }}</span>
+    <div class="status-badge" style="background: rgba(46, 204, 113, 0.1); color: var(--success); border-color: var(--success); width: 100%; margin-bottom: 2rem; padding: 1rem; text-align: center;">
+        {{ success }}
     </div>
     {% endif %}
 
     {% if login_error %}
-    <div style="
-        background: rgba(220, 60, 60, 0.12);
-        border: 1px solid rgba(220, 60, 60, 0.35);
-        border-radius: 10px;
-        padding: 1rem 1.25rem;
-        margin-bottom: 1.25rem;
-        color: #f87171;
-        font-size: 0.88rem;
-        text-align: left;
-    ">
-        <span>{{ login_error }}</span>
-
+    <div class="status-badge" style="background: rgba(231, 76, 60, 0.1); color: var(--danger); border-color: var(--danger); width: 100%; margin-bottom: 2rem; padding: 1rem; text-align: center;">
+        {{ login_error }}
+        
         {% if unverified_email %}
-        <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(220, 60, 60, 0.25);">
-            <p style="margin: 0 0 0.5rem; font-size: 0.82rem; color: #fca5a5;">
-                Não recebeu o e-mail de verificação?
-            </p>
-            <form method="post" action="/resend-verification" style="display: flex; gap: 0.4rem;">
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(231, 76, 60, 0.2);">
+            <p style="margin: 0 0 0.75rem; font-size: 0.85rem; opacity: 0.8;">Não recebeu o e-mail de verificação?</p>
+            <form method="post" action="/resend-verification">
                 <input type="hidden" name="email" value="{{ unverified_email }}">
-                <button type="submit" style="
-                    background: rgba(220, 60, 60, 0.2);
-                    border: 1px solid rgba(220, 60, 60, 0.4);
-                    color: #fca5a5;
-                    border-radius: 6px;
-                    padding: 0.35rem 0.9rem;
-                    font-size: 0.8rem;
-                    cursor: pointer;
-                    transition: background 0.2s;
-                ">Reenviar e-mail</button>
+                <button type="submit" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.8rem; width: 100%;">Reenviar e-mail</button>
             </form>
         </div>
         {% endif %}
     </div>
     {% endif %}
 
-    <form method="post" class="form-card" style="text-align: left;">
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-control" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Senha</label>
-            <input type="password" id="password" name="password" class="form-control" required>
-            <div style="text-align: right; margin-top: 6px;">
-                <a href="/forgot-password" style="font-size: 0.8rem; color: #b8a99a; text-decoration: underline;">Esqueci minha senha</a>
+    <div class="form-card">
+        <form method="post">
+            <div class="form-group">
+                <label for="email">E-mail Corporativo ou Pessoal</label>
+                <input type="email" id="email" name="email" class="form-control" required placeholder="seu@email.com">
             </div>
-        </div>
 
-        <button type="submit" class="btn btn-primary" style="width: 100%;">Entrar</button>
-    </form>
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                    <label for="password" style="margin-bottom: 0;">Senha</label>
+                    <a href="/forgot-password" style="font-size: 0.8rem; color: var(--sand); text-decoration: underline;">Esqueceu?</a>
+                </div>
+                <input type="password" id="password" name="password" class="form-control" required placeholder="••••••••">
+            </div>
 
-    <div style="margin-top: 1.5rem; font-size: 0.9rem;">
-        <span style="color: var(--sand);">Não tem uma conta?</span>
-        <a href="/register" style="color: var(--gold); text-decoration: none; font-weight: 600;">Cadastre-se</a>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Acessar Plataforma</button>
+        </form>
     </div>
 
-    <div style="margin-top: 2rem; font-size: 0.8rem; color: var(--sand);">
-        <p>Credenciais Demo:</p>
-        <p>admin@modocafe.local / Admin123!</p>
-        <p>provider@modocafe.local / Provider123!</p>
+    <div style="margin-top: 2rem; text-align: center; font-size: 0.95rem;">
+        <span style="color: var(--sand);">Novo por aqui?</span>
+        <a href="/register" style="color: var(--gold); font-weight: 700; margin-left: 0.5rem;">Crie sua conta agora</a>
+    </div>
+
+    <div class="glass" style="margin-top: 4rem; padding: 1.5rem; border-radius: 20px; font-size: 0.85rem; color: var(--sand); text-align: center;">
+        <strong style="color: var(--ink); display: block; margin-bottom: 0.5rem;">Modo Demo</strong>
+        admin@modocolab.local / Admin123!<br>
+        provider@modocolab.local / Provider123!
     </div>
 </div>
 {% endblock %}

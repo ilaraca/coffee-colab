@@ -17,7 +17,7 @@ class Transaction(Base, TimestampMixin):
     __tablename__ = "transactions"
 
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cafe_id = Column(Uuid(as_uuid=True), ForeignKey("cafes.id"), nullable=False)
+    business_id = Column(Uuid(as_uuid=True), ForeignKey("businesses.id"), nullable=False)
     from_user_id = Column(Uuid(as_uuid=True), ForeignKey("users.id"), nullable=True) # For SPEND (provider -> cafe) this might be implicit or explicit. Usually provider is the user whose balance is affecting.
     # In this logic: 
     # EARN: to_user_id = provider. (+ amount)

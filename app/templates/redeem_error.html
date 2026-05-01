@@ -26,15 +26,17 @@
 </style>
 
 <div class="error-container">
-    <span class="error-icon">🚫</span>
+    <div class="error-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+    </div>
     <h1 style="color: var(--ink); font-size: 2rem; margin-bottom: 1rem;">Acesso Negado</h1>
     <p style="color: var(--cocoa); font-size: 1.2rem;">
-        Apenas administradores da cafeteria podem validar tokens de consumo.
+        Apenas administradores da businessteria podem validar tokens de consumo.
     </p>
     <p style="margin-top: 1rem;">
         Se você é o prestador, mostre o QR Code para o caixa.
     </p>
     
-    <a href="/login" class="btn-action">Entrar como Cafeteria</a>
+    <a href="/login" class="btn-action">Entrar como Estabelecimento</a>
 </div>
 {% endblock %}

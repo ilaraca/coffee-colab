@@ -16,9 +16,9 @@ class RedeemService:
     def __init__(self, db: Session):
         self.db = db
 
-    def generate_token(self, provider_id: uuid.UUID, cafe_id: uuid.UUID, amount: int):
+    def generate_token(self, provider_id: uuid.UUID, business_id: uuid.UUID, amount: int):
          # 1. Check balance
-        balance = wallet_repo.get_balance(self.db, provider_id, cafe_id)
+        balance = wallet_repo.get_balance(self.db, provider_id, business_id)
         if balance < amount:
             raise HTTPException(400, "Insufficient balance")
             
@@ -33,7 +33,7 @@ class RedeemService:
         
         token_obj = redeem_repo.create_token(
             self.db,
-            cafe_id=cafe_id,
+            business_id=business_id,
             provider_id=provider_id,
             token_hash=token_hash,
             amount=amount,
@@ -75,19 +75,13 @@ class RedeemService:
              
         return token
 
-    def confirm_redemption(self, raw_token: str, cafe_admin_id: uuid.UUID) -> RedeemToken:
+    def confirm_redemption(self, raw_token: str, business_admin_id: uuid.UUID) -> RedeemToken:
         token = self.verify_token(raw_token)
-        
-        # Verify cafe ownership (cafe_admin belongs to the cafe the token issued for?)
-        # Need to check admin's cafe.
-        # We assume caller checked cafe_id context or we passed it.
-        # But verify_token returns token. We can check token.cafe_id vs admin.cafe_id here?
-        # Let's assume controller does check or we pass expected_cafe_id.
         
         # Perform SPEND
         wallet_repo.create_transaction(
             self.db,
-            cafe_id=token.cafe_id,
+            business_id=token.business_id,
             to_user_id=token.provider_id,
             amount=token.amount,
             type=TransactionType.SPEND,

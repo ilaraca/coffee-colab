@@ -13,7 +13,7 @@ class RedeemToken(Base, TimestampMixin):
     __tablename__ = "redeem_tokens"
 
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    cafe_id = Column(Uuid(as_uuid=True), ForeignKey("cafes.id"), nullable=False)
+    business_id = Column(Uuid(as_uuid=True), ForeignKey("businesses.id"), nullable=False)
     provider_id = Column(Uuid(as_uuid=True), ForeignKey("users.id"), nullable=False)
     
     token_hash = Column(String, nullable=False) # sha256

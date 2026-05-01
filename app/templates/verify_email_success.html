@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}E-mail verificado! — Coffee Co-lab{% endblock %}
+{% block title %}E-mail verificado! — Modo Colab{% endblock %}
 
 {% block content %}
 <div style="max-width: 440px; margin: 5rem auto; text-align: center;">
@@ -14,7 +14,9 @@
         font-size: 2.2rem;
         box-shadow: 0 0 30px rgba(46, 204, 113, 0.3);
         animation: pulse-green 2s ease-in-out infinite;
-    ">✔</div>
+    ">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
 
     <style>
         @keyframes pulse-green {
@@ -28,7 +30,7 @@
     </h1>
 
     <p style="color: var(--sand); line-height: 1.7; margin-bottom: 2.5rem;">
-        Sua conta está ativa. Faça login para começar a explorar o Coffee Co-lab.
+        Sua conta está ativa. Faça login para começar a explorar o Modo Colab.
     </p>
 
     <a href="/login" class="btn btn-primary" style="font-size: 1rem; padding: 0.85rem 2.5rem; display: inline-block; border-radius: 8px;">

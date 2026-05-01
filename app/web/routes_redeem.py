@@ -3,7 +3,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 from app.core.db import get_db
-from app.web.deps import get_cafe_admin
+from app.web.deps import get_business_admin
 from app.services.redeem_service import RedeemService
 from app.repos import users_repo
 
@@ -37,7 +37,7 @@ async def view_redeem(
     import uuid
     user = users_repo.get_user_by_id(db, uuid.UUID(user_id))
     
-    if user.role.value != "CAFE_ADMIN":
+    if user.role.value != "BUSINESS_ADMIN":
          return templates.TemplateResponse("redeem_error.html", {"request": request}, status_code=403)
 
     service = RedeemService(db)
@@ -63,7 +63,7 @@ async def view_redeem(
 async def confirm_redeem(
     token: str,
     request: Request,
-    user = Depends(get_cafe_admin),
+    user = Depends(get_business_admin),
     db: Session = Depends(get_db)
 ):
     service = RedeemService(db)

@@ -16,12 +16,12 @@ def test_0_protected_routes_require_login():
     """Rotas de painel exigem sessão (cliente sem cookies)."""
     c = TestClient(app)
     assert c.get("/provider", follow_redirects=False).status_code == 401
-    assert c.get("/cafe", follow_redirects=False).status_code == 401
+    assert c.get("/business", follow_redirects=False).status_code == 401
 
 
 @pytest.fixture(scope="module")
-def cafe_admin_email():
-    return f"cafe_{uuid.uuid4().hex[:8]}@example.com"
+def business_admin_email():
+    return f"business_{uuid.uuid4().hex[:8]}@example.com"
 
 
 @pytest.fixture(scope="module")
@@ -31,57 +31,58 @@ def db_session():
     db.close()
 
 
-def test_1_register_cafe_admin(cafe_admin_email, db_session):
+def test_1_register_business_admin(business_admin_email, db_session):
     response = client.post(
         "/register",
         data={
-            "name": "Admin Café QA",
-            "email": cafe_admin_email,
-            "password": "CafePassword123!",
-            "role": "CAFE_ADMIN",
+            "name": "Admin Business QA",
+            "email": business_admin_email,
+            "password": "BusinessPassword123!",
+            "role": "BUSINESS_ADMIN",
         },
         follow_redirects=True,
     )
     assert response.status_code == 200
     assert "Verifique seu e-mail" in response.text
-    user = get_user_by_email(db_session, cafe_admin_email)
+    user = get_user_by_email(db_session, business_admin_email)
     assert user is not None
-    assert user.role.value == "CAFE_ADMIN"
-    assert user.cafe_id is None
+    assert user.role.value == "BUSINESS_ADMIN"
+    assert user.business_id is None
 
 
-def test_2_verify_and_login_cafe(cafe_admin_email, db_session):
-    token = generate_verification_token(cafe_admin_email)
+def test_2_verify_and_login_business(business_admin_email, db_session):
+    token = generate_verification_token(business_admin_email)
     r = client.get(f"/verify-email?token={token}", follow_redirects=True)
     assert r.status_code == 200
     assert "E-mail confirmado" in r.text
 
     db_session.expire_all()
-    assert get_user_by_email(db_session, cafe_admin_email).email_verified is True
+    assert get_user_by_email(db_session, business_admin_email).email_verified is True
 
     r = client.post(
         "/login",
-        data={"email": cafe_admin_email, "password": "CafePassword123!"},
+        data={"email": business_admin_email, "password": "BusinessPassword123!"},
         follow_redirects=False,
     )
     assert r.status_code == 303
-    assert r.headers["location"] == "/cafe"
+    assert r.headers["location"] == "/business"
 
 
-def test_3_register_cafe_profile(cafe_admin_email):
-    """POST /cafe/register_profile cria cafeteria e associa ao admin."""
+def test_3_register_business_profile(business_admin_email):
+    """POST /business/register_profile cria negócio e associa ao admin."""
     r = client.post(
-        "/cafe/register_profile",
+        "/business/register_profile",
         data={
-            "name": "Cafeteria QA Smoke",
+            "name": "Negócio QA Smoke",
+            "category": "Cafe",
             "website_url": "",
             "instagram_url": "",
         },
         follow_redirects=False,
     )
     assert r.status_code == 303
-    assert r.headers["location"] == "/cafe"
+    assert r.headers["location"] == "/business"
 
-    r2 = client.get("/cafe", follow_redirects=True)
+    r2 = client.get("/business", follow_redirects=True)
     assert r2.status_code == 200
-    assert "Cafeteria QA Smoke" in r2.text
+    assert "Negócio QA Smoke" in r2.text

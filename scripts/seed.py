@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from app.core.db import SessionLocal, engine, Base
-from app.models.cafe import Cafe
+from app.models.business import Business
 from app.models.user import User, UserRole
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -17,38 +17,39 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def seed():
     db = SessionLocal()
     try:
-        # Check if Admin already exists (more robust than checking Cafe)
-        if db.query(User).filter_by(email="admin@modocafe.local").first():
+        # Check if Admin already exists (more robust than checking Business)
+        if db.query(User).filter_by(email="admin@modocolab.local").first():
             print("Already seeded (based on Admin user).")
             return
 
         print("Seeding...")
         
-        # 1. Cafe (Get or Create)
-        cafe = db.query(Cafe).filter_by(slug="modo-cafe").first()
-        if not cafe:
-            cafe = Cafe(
-                name="Modo Café", 
-                slug="modo-cafe",
-                website_url="https://modocafe.com.br",
-                instagram_url="https://instagram.com/modocafe",
+        # 1. Business (Get or Create)
+        business = db.query(Business).filter_by(slug="modo-colab").first()
+        if not business:
+            business = Business(
+                name="Modo Colab", 
+                slug="modo-colab",
+                category="Coworking / Café",
+                website_url="https://modocolab.com.br",
+                instagram_url="https://instagram.com/modocolab",
                 is_verified=True
             )
-            db.add(cafe)
+            db.add(business)
             db.commit()
-            db.refresh(cafe)
-            print(f"Created Cafe: {cafe.name}")
+            db.refresh(business)
+            print(f"Created Business: {business.name}")
         else:
-            print(f"Cafe found: {cafe.name}")
+            print(f"Business found: {business.name}")
 
         # 2. Admin
         admin_pass = pwd_context.hash("Admin123!")
         admin = User(
-            cafe_id=cafe.id,
-            name="Cafe Admin",
-            email="admin@modocafe.local",
+            business_id=business.id,
+            name="Business Admin",
+            email="admin@modocolab.local",
             password_hash=admin_pass,
-            role=UserRole.CAFE_ADMIN,
+            role=UserRole.BUSINESS_ADMIN,
             email_verified=True
         )
         db.add(admin)
@@ -57,15 +58,13 @@ def seed():
         # 3. Provider
         provider_pass = pwd_context.hash("Provider123!")
         provider = User(
-            cafe_id=None, #/Global? Or specific? Prompt said "1 provider". Let's link to cafe for MVP context if needed, but schema allows null.
+            business_id=None,
             name="John Provider",
-            email="provider@modocafe.local",
+            email="provider@modocolab.local",
             password_hash=provider_pass,
             role=UserRole.PROVIDER,
             email_verified=True
         )
-        # Note: If provider needs to interact with cafe, they just accept missions. 
-        # But for 'transactions', we need a provider.
         db.add(provider)
         print(f"Created Provider: {provider.email}")
         
