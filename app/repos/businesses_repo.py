@@ -21,3 +21,6 @@ def create_business(db: Session, name: str, category: str = None, website_url: s
 
 def get_business_by_id(db: Session, business_id) -> Business:
     return db.query(Business).filter(Business.id == business_id).first()
+
+def get_first_business(db: Session) -> Business:
+    return db.query(Business).first()

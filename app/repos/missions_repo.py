@@ -29,6 +29,14 @@ def get_open_missions(db: Session, business_id: Optional[uuid.UUID] = None) -> L
 def get_missions_for_provider(db: Session, provider_id: uuid.UUID) -> List[Mission]:
     return db.query(Mission).filter(Mission.provider_id == provider_id).order_by(desc(Mission.updated_at)).all()
 
+from sqlalchemy import func
+
+def get_completed_missions_count_for_provider(db: Session, provider_id: uuid.UUID) -> int:
+    return db.query(func.count(Mission.id)).filter(
+        Mission.provider_id == provider_id,
+        Mission.status == MissionStatus.APPROVED
+    ).scalar() or 0
+
 def get_mission_by_id(db: Session, mission_id: uuid.UUID) -> Optional[Mission]:
     return db.query(Mission).filter(Mission.id == mission_id).first()
 

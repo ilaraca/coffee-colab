@@ -60,13 +60,13 @@ async def send_verification_email(email: str) -> None:
     <body>
         <div class="container">
             <div class="header">
-                <h1>🚀 Modo Colab</h1>
+                <h1>Modo Colab</h1>
                 <p>Verificação de e-mail</p>
             </div>
             <div class="body">
                 <p>Olá! Obrigado por se cadastrar no <strong>Modo Colab</strong>.</p>
                 <p>Clique no botão abaixo para confirmar seu e-mail e ativar sua conta. O link é válido por <strong>24 horas</strong>.</p>
-                <a href="{verify_url}" class="btn">✔ Verificar meu e-mail</a>
+                <a href="{verify_url}" class="btn">Verificar meu e-mail</a>
                 <p>Se o botão não funcionar, copie e cole esse link no navegador:</p>
                 <p class="link-fallback">{verify_url}</p>
                 <p style="margin-top: 24px;">Se você não criou uma conta, ignore este e-mail.</p>
@@ -80,7 +80,7 @@ async def send_verification_email(email: str) -> None:
     """
 
     message = MessageSchema(
-        subject="🚀 Confirme seu e-mail — Modo Colab",
+        subject="Confirme seu e-mail — Modo Colab",
         recipients=[email],
         body=html_body,
         subtype=MessageType.html,
@@ -142,14 +142,14 @@ async def send_password_reset_email(email: str) -> None:
     <body>
         <div class="container">
             <div class="header">
-                <h1>🚀 Modo Colab</h1>
+                <h1>Modo Colab</h1>
                 <p>Recuperação de Senha</p>
             </div>
             <div class="body">
                 <p>Olá,</p>
                 <p>Recebemos um pedido para redefinir a senha da conta vinculada a <strong>{email}</strong> no Modo Colab.</p>
                 <p>Clique no botão abaixo para criar uma nova senha. O link é válido por <strong>2 horas</strong>.</p>
-                <a href="{reset_url}" class="btn">🔑 Redefinir minha senha</a>
+                <a href="{reset_url}" class="btn">Redefinir minha senha</a>
                 <p>Se você não solicitou isso, você pode ignorar esse e-mail com segurança. Sua senha permanecerá a mesma.</p>
                 <p style="margin-top: 24px;">Se o botão não funcionar, copie e cole este link:</p>
                 <p class="link-fallback">{reset_url}</p>
@@ -163,7 +163,7 @@ async def send_password_reset_email(email: str) -> None:
     """
 
     message = MessageSchema(
-        subject="🔑 Redefinição de Senha — Modo Colab",
+        subject="Redefinição de Senha — Modo Colab",
         recipients=[email],
         body=html_body,
         subtype=MessageType.html,

@@ -60,8 +60,8 @@ async def generate_token(
     # Need business_id. How do we know which business?
     # MVP: Form should select Business?
     # Or we default to the first business.
-    from app.models.business import Business
-    business = db.query(Business).first() 
+    from app.repos import businesses_repo
+    business = businesses_repo.get_first_business(db) 
     if not business:
         raise HTTPException(500, "No business found")
         

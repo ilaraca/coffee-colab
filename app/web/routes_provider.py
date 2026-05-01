@@ -25,8 +25,8 @@ async def provider_dashboard(
     elif tab == "my":
         missions_my = missions_repo.get_missions_for_provider(db, user.id)
     elif tab == "portfolio":
-        from app.models.portfolio import PortfolioItem
-        missions_portfolio = db.query(PortfolioItem).filter(PortfolioItem.provider_id == user.id).all()
+        from app.repos import portfolio_repo
+        missions_portfolio = portfolio_repo.get_items_for_provider(db, user.id)
         return templates.TemplateResponse("provider_dashboard.html", {
             "request": request, 
             "user": user,

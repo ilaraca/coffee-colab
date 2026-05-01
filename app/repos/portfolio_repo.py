@@ -25,3 +25,22 @@ def create_portfolio_item(
     db.commit()
     db.refresh(item)
     return item
+
+def get_items_for_provider(db: Session, provider_id: uuid.UUID) -> list[PortfolioItem]:
+    return db.query(PortfolioItem).filter(PortfolioItem.provider_id == provider_id).all()
+
+def get_public_items_for_provider(db: Session, provider_id: uuid.UUID) -> list[PortfolioItem]:
+    return db.query(PortfolioItem).filter(
+        PortfolioItem.provider_id == provider_id,
+        PortfolioItem.is_public == True
+    ).order_by(PortfolioItem.created_at.desc()).all()
+
+def get_item_by_id_and_provider(db: Session, item_id: uuid.UUID, provider_id: uuid.UUID) -> PortfolioItem:
+    return db.query(PortfolioItem).filter(
+        PortfolioItem.id == item_id,
+        PortfolioItem.provider_id == provider_id
+    ).first()
+
+def toggle_item_visibility(db: Session, item: PortfolioItem):
+    item.is_public = not item.is_public
+    db.commit()
