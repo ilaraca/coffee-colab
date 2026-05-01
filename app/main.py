@@ -20,8 +20,20 @@ app = FastAPI(title="Modo Colab")
 # Middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
+from starlette.middleware.base import BaseHTTPMiddleware
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        return response
+
+app.add_middleware(SecurityHeadersMiddleware)
+
 # Static
-app.mount("/static", StaticFiles(directory="app/static"), name="static") 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 
 # Routes
@@ -35,6 +47,23 @@ app.include_router(routes_redeem.router)
 app.include_router(routes_portfolio.router)
 
 templates = Jinja2Templates(directory="app/templates")
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.responses import HTMLResponse
+
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    if exc.status_code == 404:
+        return templates.TemplateResponse("errors/404.html", {"request": request}, status_code=404)
+    if exc.status_code == 500:
+        return templates.TemplateResponse("errors/500.html", {"request": request}, status_code=500)
+    return HTMLResponse(content=f"Error {exc.status_code}: {exc.detail}", status_code=exc.status_code)
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    return templates.TemplateResponse("errors/500.html", {"request": request}, status_code=500)
 
 @app.get("/")
 async def home(request: Request):
