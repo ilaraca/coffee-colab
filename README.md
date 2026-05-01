@@ -122,6 +122,65 @@ sequenceDiagram
 
 ---
 
+## 🏛️ Arquitetura da Solução
+
+```mermaid
+graph TD
+    %% Cliente
+    subgraph Client [Cliente Web]
+        Browser["Navegador (Usuário)"]
+        HTMX["HTMX (AJAX & UI Dinâmica)"]
+        Browser <--> HTMX
+    end
+
+    %% Servidor / Aplicação
+    subgraph App [Aplicação - Modo Colab]
+        direction TB
+        FastAPI["FastAPI (Web Framework)"]
+        Jinja["Jinja2 (Templates)"]
+        
+        subgraph Routers [Rotas da API]
+            Auth["/auth"]
+            Business["/business"]
+            Provider["/provider"]
+            Wallet["/wallet"]
+        end
+        
+        subgraph Services [Lógica de Negócios]
+            Ledger["Wallet & Ledger Service"]
+            MissionS["Mission Engine"]
+            Token["Token & QR Generator"]
+        end
+        
+        subgraph Repos [Camada de Acesso a Dados]
+            RepoUsers["Users Repo"]
+            RepoMissions["Missions Repo"]
+            RepoTx["Transactions Repo"]
+        end
+
+        %% Fluxo interno da aplicação
+        FastAPI --> Jinja
+        FastAPI --> Routers
+        Routers --> Services
+        Services --> Repos
+    end
+
+    %% Infraestrutura Externa
+    subgraph Infrastructure [Infraestrutura]
+        PostgreSQL[("PostgreSQL\n(SQLAlchemy ORM)")]
+        SMTP["SMTP / E-mail\n(Notificações)"]
+        Sentry["Sentry\n(Logs de Erro)"]
+    end
+
+    %% Conexões principais
+    HTMX <-->|HTTP / HTML / JSON| FastAPI
+    Repos <--> PostgreSQL
+    Services --> SMTP
+    App --> Sentry
+```
+
+---
+
 ## 🛠 Tech Stack
 
 | Camada | Tecnologia |
