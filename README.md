@@ -181,16 +181,17 @@ graph TD
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 Tech Stack e Decisões Arquiteturais
 
-| Camada | Tecnologia |
-|---|---|
-| **Backend** | Python + FastAPI |
-| **Banco de Dados** | PostgreSQL + SQLAlchemy ORM |
-| **Frontend / UI** | HTMX + Jinja2 Templates + Vanilla CSS |
-| **Migrations** | Alembic |
-| **E-mails** | fastapi-mail (Mailtrap / SMTP) |
-| **QR Code** | qrcode + Pillow |
+| Camada | Tecnologia | Motivo da Escolha |
+|---|---|---|
+| **Backend** | Python + FastAPI | Alta performance (assíncrono nativo), tipagem forte (Pydantic), e desenvolvimento iterativo ultrarrápido para validação segura do MVP. |
+| **Banco de Dados** | PostgreSQL + SQLAlchemy | Robustez relacional e suporte transacional avançado (essencial para o Ledger de créditos). O SQLAlchemy traz um ORM maduro que abstrai regras de negócio da infraestrutura. |
+| **Frontend / UI** | HTMX + Jinja2 + Vanilla CSS | Abordagem *Hypermedia-Driven*. Substitui a complexidade de um SPA (React/Vue) pela simplicidade de SSR com Jinja2. O HTMX cuida do dinamismo (AJAX/DOM updates) sem precisar de JavaScript pesado. |
+| **Migrations** | Alembic | Padrão absoluto para ecossistema SQLAlchemy, facilitando a evolução do schema do banco e integrando bem com os fluxos do backend. |
+| **E-mails** | fastapi-mail (SMTP) | Biblioteca assíncrona feita sob medida para o ecossistema FastAPI, processando os envios sem bloquear o event loop e com forte suporte a templates Jinja2. |
+| **Autenticação**| Passlib (bcrypt) + Starlette Sessions | Simplificação deliberada. Uso de sessions tradicionais (cookies assinados) em vez de JWT para garantir facilidade na revogação e aderência à renderização server-side. |
+| **QR Code** | qrcode + Pillow | Leves, estáveis e não exigem armazenamento estático. O QR Code é gerado em memória (BytesIO), encodado em base64 e impresso direto no HTML do usuário no ato da consulta. |
 
 ---
 
