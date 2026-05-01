@@ -37,14 +37,28 @@ async def provider_dashboard(
         })
     elif tab == "wallet":
         from app.repos import wallet_repo
-        # Reusing logic from routes_wallet.py
         transactions = wallet_repo.get_transactions(db, user.id)
-        balance = 0
-        for tx in transactions:
-            if tx.type.value == 'EARN':
-                balance += tx.amount
-            elif tx.type.value == 'SPEND':
-                balance -= tx.amount
+        
+        from app.models.business import Business
+        business_ids = {tx.business_id for tx in transactions}
+        businesses = db.query(Business).filter(Business.id.in_(list(business_ids))).all()
+        business_map = {b.id: b for b in businesses}
+        
+        grouped_wallets = []
+        for b_id, b_obj in business_map.items():
+            b_txs = [tx for tx in transactions if tx.business_id == b_id]
+            b_balance = 0
+            for tx in b_txs:
+                if tx.type.value == 'EARN': 
+                    b_balance += tx.amount
+                elif tx.type.value == 'SPEND': 
+                    b_balance -= tx.amount
+            if b_balance > 0 or b_txs:
+                grouped_wallets.append({
+                    "business": b_obj,
+                    "balance": b_balance,
+                    "transactions": b_txs
+                })
         
         return templates.TemplateResponse("provider_dashboard.html", {
             "request": request, 
@@ -52,8 +66,7 @@ async def provider_dashboard(
             "tab": tab,
             "missions_open": missions_open,
             "missions_my": missions_my,
-            "transactions": transactions,
-            "balance": balance
+            "grouped_wallets": grouped_wallets
         })
 
     return templates.TemplateResponse("provider_dashboard.html", {

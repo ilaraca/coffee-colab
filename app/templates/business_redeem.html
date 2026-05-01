@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 4rem; padding-bottom: 4rem; max-width: 600px;">
+    
+    <div class="header" style="margin-bottom: 2rem; text-align: center;">
+        <h2>Validar Consumo</h2>
+        <p style="color: var(--sand);">Confirme os dados antes de debitar os créditos.</p>
+    </div>
+
+    {% if error %}
+    <div style="background: var(--terracotta); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; text-align: center;">
+        {{ error }}
+        <div style="margin-top: 1rem;">
+            <a href="/business" style="color: white; text-decoration: underline;">Voltar ao Painel</a>
+        </div>
+    </div>
+    {% elif success %}
+    <div style="background: green; color: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; text-align: center;">
+        <h3 style="margin-top: 0;">Consumo Confirmado!</h3>
+        <p>Os créditos foram debitados com sucesso.</p>
+        <div style="margin-top: 1.5rem;">
+            <a href="/business" class="btn" style="background: white; color: green; text-decoration: none;">Voltar ao Painel</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="form-card" style="border: 2px solid var(--gold);">
+        <h3 style="text-align: center; margin-bottom: 1.5rem;">Resumo da Operação</h3>
+        
+        <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line);">
+            <p style="color: var(--sand); margin: 0 0 0.5rem 0; font-size: 0.9rem;">Token</p>
+            <p style="font-size: 1.5rem; letter-spacing: 0.2em; color: var(--ink); margin: 0;">{{ token_str }}</p>
+        </div>
+
+        <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--line);">
+            <p style="color: var(--sand); margin: 0 0 0.5rem 0; font-size: 0.9rem;">Valor a Debitar</p>
+            <p style="font-size: 2rem; font-weight: bold; color: var(--gold); margin: 0;">{{ token_obj.amount }} $</p>
+        </div>
+        
+        <div style="margin-bottom: 2rem;">
+            <p style="color: var(--sand); margin: 0 0 0.5rem 0; font-size: 0.9rem;">Prestador</p>
+            <p style="font-size: 1.2rem; color: var(--ink); margin: 0;">{{ provider.name }}</p>
+        </div>
+
+        <form action="/business/redeem/{{ token_str }}" method="post" style="text-align: center;">
+            <a href="/business" class="btn btn-secondary" style="margin-right: 1rem;">Cancelar</a>
+            <button type="submit" class="btn btn-primary" style="background: var(--gold); color: var(--ink); border: none;">Confirmar Débito</button>
+        </form>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

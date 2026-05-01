@@ -31,19 +31,31 @@ async def wallet_view(
     
     transactions = wallet_repo.get_transactions(db, user.id)
     
-    # Calculate simple balance
-    balance = 0
-    for tx in transactions:
-         if tx.type.value == 'EARN': 
-             balance += tx.amount
-         elif tx.type.value == 'SPEND': 
-             balance -= tx.amount
+    from app.models.business import Business
+    business_ids = {tx.business_id for tx in transactions}
+    businesses = db.query(Business).filter(Business.id.in_(list(business_ids))).all()
+    business_map = {b.id: b for b in businesses}
+    
+    grouped_wallets = []
+    for b_id, b_obj in business_map.items():
+        b_txs = [tx for tx in transactions if tx.business_id == b_id]
+        b_balance = 0
+        for tx in b_txs:
+            if tx.type.value == 'EARN': 
+                b_balance += tx.amount
+            elif tx.type.value == 'SPEND': 
+                b_balance -= tx.amount
+        if b_balance > 0 or b_txs:
+            grouped_wallets.append({
+                "business": b_obj,
+                "balance": b_balance,
+                "transactions": b_txs
+            })
     
     return templates.TemplateResponse("wallet.html", {
         "request": request, 
         "user": user,
-        "transactions": transactions,
-        "balance": balance
+        "grouped_wallets": grouped_wallets
     })
 
 @router.get("/token")
@@ -53,17 +65,22 @@ async def token_redirect():
 @router.post("/token")
 async def generate_token(
     request: Request,
+    business_id: str = Form(...),
     amount: int = Form(...),
     user = Depends(get_provider),
     db: Session = Depends(get_db)
 ):
-    # Need business_id. How do we know which business?
-    # MVP: Form should select Business?
-    # Or we default to the first business.
+    import uuid
     from app.repos import businesses_repo
-    business = businesses_repo.get_first_business(db) 
+    
+    try:
+        b_id = uuid.UUID(business_id)
+        business = businesses_repo.get_business_by_id(db, b_id)
+    except ValueError:
+        business = None
+        
     if not business:
-        raise HTTPException(500, "No business found")
+        raise HTTPException(400, "Business not found")
         
     service = RedeemService(db)
     
@@ -71,24 +88,43 @@ async def generate_token(
         raw_token, token_obj = service.generate_token(user.id, business.id, amount)
         qr_url = service.generate_qr_image(f"{request.base_url}redeem/{raw_token}")
         
-        # Show success page with QR INSIDE Validator Dashboard
+        # Grouping logic again for success response
+        transactions = wallet_repo.get_transactions(db, user.id)
+        from app.models.business import Business
+        business_ids = {tx.business_id for tx in transactions}
+        businesses = db.query(Business).filter(Business.id.in_(list(business_ids))).all()
+        grouped_wallets = []
+        for b in businesses:
+            b_txs = [tx for tx in transactions if tx.business_id == b.id]
+            bal = sum(t.amount for t in b_txs if t.type.value == 'EARN') - sum(t.amount for t in b_txs if t.type.value == 'SPEND')
+            grouped_wallets.append({"business": b, "balance": bal, "transactions": b_txs})
+
         return templates.TemplateResponse("provider_dashboard.html", {
             "request": request, 
             "user": user,
             "tab": "wallet",
-            "transactions": wallet_repo.get_transactions(db, user.id),
-            "balance": wallet_repo.get_balance(db, user.id, business.id),
+            "grouped_wallets": grouped_wallets,
             "new_qr": qr_url,
             "new_token_expiry": token_obj.expires_at,
-            "redeem_link": f"{request.base_url}redeem/{raw_token}"
+            "redeem_link": f"{request.base_url}business/redeem/{raw_token}",
+            "raw_token": raw_token
         })
         
     except HTTPException as e:
+        transactions = wallet_repo.get_transactions(db, user.id)
+        from app.models.business import Business
+        business_ids = {tx.business_id for tx in transactions}
+        businesses = db.query(Business).filter(Business.id.in_(list(business_ids))).all()
+        grouped_wallets = []
+        for b in businesses:
+            b_txs = [tx for tx in transactions if tx.business_id == b.id]
+            bal = sum(t.amount for t in b_txs if t.type.value == 'EARN') - sum(t.amount for t in b_txs if t.type.value == 'SPEND')
+            grouped_wallets.append({"business": b, "balance": bal, "transactions": b_txs})
+
         return templates.TemplateResponse("provider_dashboard.html", {
             "request": request, 
             "user": user,
             "tab": "wallet",
-            "transactions": wallet_repo.get_transactions(db, user.id),
-            "balance": 0, 
+            "grouped_wallets": grouped_wallets,
             "error": e.detail
         })

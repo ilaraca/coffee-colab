@@ -90,6 +90,16 @@
     </form>
 </div>
 
+<!-- Redeem Fallback Form -->
+<div class="form-card" style="margin-bottom: 2rem; background: var(--cream); border: 1px solid var(--line);">
+    <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Validar Consumo (Manual)</h3>
+    <p style="color: var(--sand); margin-bottom: 1rem; font-size: 0.9rem;">O talento também pode apresentar um código de 6 letras em vez do QR Code.</p>
+    <form action="/business/redeem" method="get" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <input type="text" name="token" class="form-control" placeholder="Ex: A1B2C3" required style="text-transform: uppercase; max-width: 200px; font-weight: bold; letter-spacing: 0.1em;">
+        <button type="submit" class="btn btn-primary" style="background: var(--ink); border: none;">Validar Código</button>
+    </form>
+</div>
+
 <!-- Tabs (Simple Visual) -->
 <div style="border-bottom: 1px solid var(--line); margin-bottom: 1.5rem;">
     <span style="border-bottom: 2px solid var(--ink); padding: 0.5rem 1rem; display: inline-block;">Todas as Missões</span>

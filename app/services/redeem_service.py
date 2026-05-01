@@ -22,8 +22,9 @@ class RedeemService:
         if balance < amount:
             raise HTTPException(400, "Insufficient balance")
             
-        # 2. Generate secure random token
-        raw_token = secrets.token_urlsafe(32)
+        import string
+        # 2. Generate secure random short token (6 chars)
+        raw_token = ''.join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(6))
         # 3. Hash it
         token_hash = hashlib.sha256(raw_token.encode()).hexdigest()
         

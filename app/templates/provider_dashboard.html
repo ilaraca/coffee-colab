@@ -143,71 +143,90 @@
     {% elif tab == 'wallet' %}
         <style>
              .wallet-header { margin-bottom: 2rem; }
-             .qr-container { background: #eef; padding: 2rem; border-radius: 8px; text-align: center; margin-bottom: 2rem; border: 2px dashed var(--ink); }
-             .qr-img { max-width: 200px; border: 10px solid white; }
-             .token-form-container { background: white; padding: 1.5rem; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 2rem; box-shadow: 2px 2px 0 var(--latte);}
+             .qr-container { background: var(--cream); padding: 2rem; border-radius: 8px; text-align: center; margin-bottom: 2rem; border: 2px dashed var(--sand); }
+             .qr-img { max-width: 200px; border: 10px solid white; border-radius: 8px; }
              .token-form { display: flex; gap: 1rem; align-items: flex-end; }
-             .tx-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+             .tx-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
              .tx-table th { text-align: left; border-bottom: 2px solid var(--line); padding: 0.5rem; color: var(--ink); }
              .tx-table td { padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--cream); }
              .tx-amount { font-weight: bold; }
              .tx-amount.EARN { color: green; }
              .tx-amount.SPEND { color: var(--terracotta); }
+             .wallet-card { background: white; border: 1px solid var(--line); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 2px 2px 0 var(--latte); }
         </style>
 
         <div class="wallet-header">
             <h2>Sua Carteira</h2>
-            <h1 style="font-size: 3rem; color: var(--ink);">{{ balance }} $</h1>
+            <p style="color: var(--sand);">Seu saldo é específico para cada estabelecimento onde você completou missões.</p>
         </div>
+
+        {% if error %}
+        <div style="background: var(--terracotta); color: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+            {{ error }}
+        </div>
+        {% endif %}
 
         {% if new_qr %}
         <div class="qr-container">
-            <h3>Seu Token de Consumo (Gerado)</h3>
+            <h3 style="margin-top: 0;">Seu Token de Consumo</h3>
+            <h1 style="letter-spacing: 0.2em; color: var(--ink); margin: 0.5rem 0;">{{ raw_token }}</h1>
             <img src="{{ new_qr }}" class="qr-img">
-            <p>Mostre este QR Code no caixa.</p>
-            <p><small>Expira em: {{ new_token_expiry }}</small></p>
-            <p><a href="{{ redeem_link }}" target="_blank">Link direto (Simulação)</a></p>
-        </div>
-        {% else %}
-        <div class="token-form-container">
-            <h3 style="margin-top: 0;">Gerar Token de Consumo</h3>
-            <form action="/wallet/token" method="post" class="token-form">
-                <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--cocoa);">Valor a consumir ($)</label>
-                    <input type="number" name="amount" min="1" max="{{ balance }}" required class="form-control" style="width: 150px;">
-                </div>
-                <button type="submit" class="btn btn-primary">Gerar QR Code</button>
-            </form>
+            <p style="color: var(--cocoa); margin-bottom: 0.2rem;">Mostre este QR Code ou informe o código acima no caixa.</p>
+            <p style="color: var(--sand); margin-top: 0;"><small>Expira em: {{ new_token_expiry.strftime('%H:%M') }} (UTC)</small></p>
+            <p style="margin-top: 1rem;"><a href="{{ redeem_link }}" target="_blank" style="color: var(--gold); text-decoration: underline;">Simular leitura pelo Estabelecimento</a></p>
         </div>
         {% endif %}
 
-        <h3>Extrato</h3>
-        {% if transactions %}
-        <table class="tx-table">
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Tipo</th>
-                    <th>Valor</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tx in transactions %}
-                <tr>
-                    <td>{{ tx.created_at.strftime('%d/%m %H:%M') }}</td>
-                    <td>{{ tx.type.value }}</td>
-                    <td class="tx-amount {{ tx.type.value }}">
-                        {% if tx.type.value == 'EARN' %}+{% else %}-{% endif %}{{ tx.amount }} $
-                    </td>
-                    <td>{{ tx.status.value }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% for w in grouped_wallets %}
+        <div class="wallet-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--cream); padding-bottom: 1rem; margin-bottom: 1rem;">
+                <h3 style="margin: 0; font-size: 1.5rem;">{{ w.business.name }}</h3>
+                <h2 style="margin: 0; font-size: 2rem; color: var(--ink);">{{ w.balance }} $</h2>
+            </div>
+            
+            {% if w.balance > 0 %}
+            <form action="/wallet/token" method="post" class="token-form" style="margin-bottom: 1.5rem;">
+                <input type="hidden" name="business_id" value="{{ w.business.id }}">
+                <div>
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--cocoa); font-size: 0.9rem;">Valor a consumir ($)</label>
+                    <input type="number" name="amount" min="1" max="{{ w.balance }}" required class="form-control" style="width: 150px;">
+                </div>
+                <button type="submit" class="btn btn-primary">Gerar QR Code</button>
+            </form>
+            {% endif %}
+
+            <details>
+                <summary style="cursor: pointer; color: var(--sand); font-size: 0.9rem;">Ver Extrato</summary>
+                <table class="tx-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tx in w.transactions %}
+                        <tr>
+                            <td>{{ tx.created_at.strftime('%d/%m %H:%M') }}</td>
+                            <td>{{ tx.type.value }}</td>
+                            <td class="tx-amount {{ tx.type.value }}">
+                                {% if tx.type.value == 'EARN' %}+{% else %}-{% endif %}{{ tx.amount }} $
+                            </td>
+                            <td>{{ tx.status.value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </details>
+        </div>
         {% else %}
-        <p>Nenhuma transação encontrada.</p>
-        {% endif %}
+        <div class="form-card" style="text-align: center;">
+            <p style="color: var(--sand);">Você ainda não possui saldo em nenhum estabelecimento.</p>
+        </div>
+        {% endfor %}
+
 
     {% endif %}
 </div>
