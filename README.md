@@ -79,6 +79,49 @@ sequenceDiagram
 
 ---
 
+## 🛣️ Fluxo de Endpoints (E2E)
+
+Abaixo está a representação técnica do ciclo completo (End-to-End) mapeando os endpoints da API:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin as Admin (Navegador)
+    actor Provider as Talento (Navegador)
+    participant Auth as Auth Router
+    participant Business as Business Router
+    participant ProviderR as Provider Router
+    participant Wallet as Wallet Router
+    
+    %% Onboarding
+    Note over Admin, Wallet: 1. Onboarding & Criação
+    Admin->>Auth: POST /register (role=BUSINESS_ADMIN)
+    Admin->>Auth: GET /verify-email?token=...
+    Admin->>Auth: POST /login
+    Admin->>Business: POST /business/register_profile
+    Admin->>Business: POST /business/missions
+    
+    %% Aceite & Conclusão
+    Note over Admin, Wallet: 2. Aceite & Conclusão
+    Provider->>Auth: POST /register (role=PROVIDER)
+    Provider->>Auth: POST /login
+    Provider->>ProviderR: POST /provider/missions/{id}/accept
+    Provider->>ProviderR: POST /provider/missions/{id}/done (envia proof_of_work)
+    
+    %% Approve & Portfolio
+    Note over Admin, Wallet: 3. Aprovação & Distribuição
+    Admin->>Business: POST /business/missions/{id}/approve (score, text)
+    Note right of Business: Gera Transação (EARN) e Item de Portfólio
+    
+    %% Redeem
+    Note over Admin, Wallet: 4. Resgate (Consumo)
+    Provider->>Wallet: POST /wallet/token (Gera código de 6 letras)
+    Admin->>Business: GET /business/redeem/{token} (Carrega Info)
+    Admin->>Business: POST /business/redeem/{token} (Confirma SPEND)
+```
+
+---
+
 ## 🛠 Tech Stack
 
 | Camada | Tecnologia |
