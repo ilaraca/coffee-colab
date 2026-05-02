@@ -15,7 +15,8 @@
     <script src="https://unpkg.com/htmx.org@1.9.10" defer></script>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/style.css?v=3">
+    <script src="/static/js/theme.js"></script>
 </head>
 <body>
 
@@ -23,6 +24,10 @@
     <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
         <a href="/" class="nav-brand">Modo<span>Colab</span></a>
         <div style="display:flex; align-items:center; gap:1rem;">
+            <!-- Theme Toggle -->
+            <button class="theme-toggle-btn" aria-label="Alternar tema">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
             {% if user %}
                 <span style="font-size:0.85rem; color:var(--sand); font-weight:500;">Olá, {{ user.name.split()[0] }}</span>
                 {% if user.role.value == 'BUSINESS_ADMIN' %}

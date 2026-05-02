@@ -1,193 +1,399 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão — Modo Colab</title>
+    <meta name="description" content="Painel de controle do estabelecimento no Modo Colab.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css?v=3">
+    <script src="/static/js/theme.js"></script>
+</head>
+<body style="overflow:hidden;">
 
-{% block content %}
-<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
-<div class="header" style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
-    <div>
-        <h2 style="margin: 0;">Painel do Estabelecimento</h2>
-        <p style="color: var(--sand);">
-            {% if business %}
-                Gestão de {{ business.name }}
-            {% else %}
-                Complete seu cadastro
-            {% endif %}
-        </p>
-    </div>
-    {% if business %}
-    <button onclick="document.getElementById('new-mission-form').style.display='block'" class="btn btn-primary">
-        + Nova Missão
-    </button>
-    {% endif %}
-</div>
+<div class="dash-layout">
 
-{% if not business %}
-<div class="form-card" style="margin-bottom: 2rem; border-left: 4px solid var(--gold);">
-    <h3 style="margin-bottom: 1rem;">Cadastre seu Estabelecimento</h3>
-    <p style="color: var(--sand); margin-bottom: 1.5rem;">Antes de criar missões, precisamos saber mais sobre o seu negócio.</p>
-    
-    <form action="/business/register_profile" method="post">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="name">Nome do Estabelecimento</label>
-                <input type="text" id="name" name="name" class="form-control" required placeholder="Ex: Modo Colab">
-            </div>
-            <div class="form-group">
-                <label for="category">Categoria</label>
-                <select id="category" name="category" class="form-control" required>
-                    <option value="" disabled selected>Selecione uma categoria</option>
-                    <option value="Cafe">Cafeteria</option>
-                    <option value="Restaurante">Restaurante</option>
-                    <option value="Padaria">Padaria / Confeitaria</option>
-                    <option value="Bar">Bar / Pub</option>
-                    <option value="Outro">Outro</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="website_url">Link do Site (Opcional)</label>
-            <input type="url" id="website_url" name="website_url" class="form-control" placeholder="https://...">
-        </div>
-        <div class="form-group">
-            <label for="instagram_url">Link do Instagram ou Google Maps (Opcional mas recomendado)</label>
-            <input type="url" id="instagram_url" name="instagram_url" class="form-control" placeholder="https://instagram.com/...">
-        </div>
-        <button type="submit" class="btn btn-primary">Salvar Perfil</button>
-    </form>
-</div>
-{% else %}
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="dash-sidebar">
+        <a href="/" class="dash-sidebar-brand">Modo<span>Colab</span></a>
 
-{% if not business.is_verified %}
-<div style="background-color: #fff3cd; color: #856404; padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #ffeeba; display:flex; align-items:flex-start; gap:0.5rem;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:0.1rem;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    <div>
-        <strong>Em análise:</strong> O perfil do seu estabelecimento está sendo verificado pela nossa equipe. Você pode criar missões para testar, mas elas só ficarão visíveis para os prestadores após a aprovação para garantir a segurança da comunidade.
-    </div>
-</div>
-{% endif %}
+        <div class="dash-nav-label">Principal</div>
+        <a href="/business" class="dash-nav-item active">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Painel
+        </a>
+        <a href="#missoes" class="dash-nav-item" onclick="scrollToSection('missoes')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            Missões
+        </a>
+        <a href="#validar" class="dash-nav-item" onclick="scrollToSection('validar')">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Validar Consumo
+        </a>
 
-<!-- New Mission Form -->
-<div id="new-mission-form" class="form-card" style="display: none; margin-bottom: 2rem;">
-    <h3 class="mb-2">Nova Missão</h3>
-    <form action="/business/missions" method="post">
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="title">Título da Missão</label>
-                <input type="text" id="title" name="title" class="form-control" placeholder="Ex: Criar logo 3D..." required>
-            </div>
-            <div class="form-group">
-                <label for="credit_value">Valor (Créditos)</label>
-                <input type="number" id="credit_value" name="credit_value" class="form-control" min="1" placeholder="100" required>
+
+
+        <div class="dash-nav-label" style="margin-top:1.5rem;">Conta</div>
+        <form action="/logout" method="post" style="margin:0;">
+            <button type="submit" class="dash-nav-item" style="background:none; border:none; cursor:pointer; width:100%; text-align:left; font-family:'Inter',sans-serif;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sair
+            </button>
+        </form>
+
+        <!-- User Info -->
+        <div class="dash-sidebar-footer">
+            <div class="dash-user-info">
+                <div class="dash-avatar">{{ user.name[0].upper() }}</div>
+                <div>
+                    <div class="dash-user-name">{{ user.name.split()[0] }}</div>
+                    <div class="dash-user-role">{% if business %}{{ business.name }}{% else %}Estabelecimento{% endif %}</div>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <label for="description">Descrição Detalhada</label>
-            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Descreva o que precisa ser feito..." required></textarea>
-        </div>
-        <div class="text-right mt-2">
-            <button type="button" class="btn btn-secondary" onclick="document.getElementById('new-mission-form').style.display='none'" style="margin-right: 0.5rem;">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Criar Missão</button>
-        </div>
-    </form>
-</div>
+    </aside>
 
-<!-- Redeem Fallback Form -->
-<div class="form-card" style="margin-bottom: 2rem; background: var(--cream); border: 1px solid var(--line);">
-    <h3 style="margin-top: 0; margin-bottom: 0.5rem;">Validar Consumo (Manual)</h3>
-    <p style="color: var(--sand); margin-bottom: 1rem; font-size: 0.9rem;">O talento também pode apresentar um código de 6 letras em vez do QR Code.</p>
-    <form action="/business/redeem" method="get" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <input type="text" name="token" class="form-control" placeholder="Ex: A1B2C3" required style="text-transform: uppercase; max-width: 200px; font-weight: bold; letter-spacing: 0.1em;">
-        <button type="submit" class="btn btn-primary" style="background: var(--ink); border: none;">Validar Código</button>
-    </form>
-</div>
+    <!-- ========== MAIN ========== -->
+    <main class="dash-main" style="height:100vh; overflow-y:auto;">
 
-<!-- Tabs (Simple Visual) -->
-<div style="border-bottom: 1px solid var(--line); margin-bottom: 1.5rem;">
-    <span style="border-bottom: 2px solid var(--ink); padding: 0.5rem 1rem; display: inline-block;">Todas as Missões</span>
-</div>
+        <!-- Topbar -->
+        <div class="dash-topbar">
+            <div>
+                <div class="dash-topbar-title">
+                    {% if business %}{{ business.name }}{% else %}Bem-vindo ao Modo Colab{% endif %}
+                </div>
+                <div class="dash-topbar-sub">
+                    {% if business %}Painel de controle do estabelecimento{% else %}Configure seu estabelecimento para começar{% endif %}
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <!-- Theme Toggle no Topbar -->
+                <button class="theme-toggle-btn" aria-label="Alternar tema">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
 
-<div class="missions-grid" style="display: grid; gap: 1rem;">
-    {% for mission in missions %}
-    <div class="card" style="background: white; padding: 1.5rem; border: 1px solid var(--line); border-radius: 8px; box-shadow: 2px 2px 0 var(--latte);">
-        <div style="display: flex; justify-content: space-between;">
-            <h3 style="margin: 0; font-size: 1.2rem;">{{ mission.title }}</h3>
-            <span style="background: var(--latte); padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">
-                {% if mission.status.value == 'OPEN' %}Aberta
-                {% elif mission.status.value == 'ACCEPTED' %}Em Andamento
-                {% elif mission.status.value == 'DONE' %}Avaliação Pendente
-                {% elif mission.status.value == 'APPROVED' %}Concluída
-                {% else %}{{ mission.status.value }}{% endif %}
-            </span>
+                {% if business %}
+                <button onclick="toggleForm('new-mission-form')" class="btn btn-dark-gold" style="gap:0.5rem;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nova Missão
+                </button>
+                {% endif %}
+            </div>
         </div>
-        <p style="color: var(--cocoa); margin: 0.5rem 0;">{{ mission.description }}</p>
-        <div style="margin-top: 1rem; font-weight: 600; color: var(--gold);">
-            {{ mission.credit_value }} Créditos
+
+        <!-- Flash de erro -->
+        {% if error %}
+        <div style="background:rgba(185,28,28,0.15); border:1px solid rgba(185,28,28,0.4); color:#fca5a5; padding:1rem 1.25rem; border-radius:12px; margin-bottom:1.5rem; font-size:0.88rem;">
+            {{ error }}
         </div>
-        <div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--sand);">
-            {% if mission.provider %}
-                Prestador: {{ mission.provider.name }}
-            {% else %}
-                Aguardando prestador...
-            {% endif %}
-        </div>
-        
-        <!-- Actions based on status -->
-        <div style="margin-top: 1rem;">
-            {% if mission.status.value == 'DONE' %}
-                {% if mission.proof_of_work %}
-                <div style="background: var(--cream); padding: 0.8rem; border-radius: 4px; margin-bottom: 1rem; border-left: 3px solid var(--ink);">
-                    <strong style="display: block; font-size: 0.8rem; color: var(--sand); margin-bottom: 0.2rem;">Evidência de Trabalho:</strong>
-                    <div style="word-break: break-all; color: var(--ink);">
-                        <a href="{{ mission.proof_of_work }}" target="_blank" style="color: var(--terracotta); text-decoration: underline;">{{ mission.proof_of_work }}</a>
-                        <!-- Simple auto-link assumption, or just text -->
+        {% endif %}
+
+        <!-- ===== ONBOARDING: sem estabelecimento ===== -->
+        {% if not business %}
+        <div class="dash-card" style="max-width:560px; margin:2rem auto;">
+            <div class="dash-card-header">
+                <div>
+                    <div class="dash-card-title">Cadastre seu Estabelecimento</div>
+                    <div class="dash-card-sub">Antes de criar missões, precisamos saber mais sobre o seu negócio.</div>
+                </div>
+            </div>
+            <form action="/business/register_profile" method="post">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                    <div>
+                        <label class="dash-inline-form-label" for="name">Nome do Estabelecimento</label>
+                        <input type="text" id="name" name="name" class="form-control-dark" required placeholder="Ex: Café Central">
+                    </div>
+                    <div>
+                        <label class="dash-inline-form-label" for="category">Categoria</label>
+                        <select id="category" name="category" class="form-control-dark" required>
+                            <option value="" disabled selected>Selecione...</option>
+                            <option value="Cafe">Cafeteria</option>
+                            <option value="Restaurante">Restaurante</option>
+                            <option value="Padaria">Padaria / Confeitaria</option>
+                            <option value="Bar">Bar / Pub</option>
+                            <option value="Outro">Outro</option>
+                        </select>
                     </div>
                 </div>
-                {% endif %}
+                <div style="margin-bottom:1rem;">
+                    <label class="dash-inline-form-label" for="website_url">Site (Opcional)</label>
+                    <input type="url" id="website_url" name="website_url" class="form-control-dark" placeholder="https://...">
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <label class="dash-inline-form-label" for="instagram_url">Instagram ou Google Maps (Recomendado)</label>
+                    <input type="url" id="instagram_url" name="instagram_url" class="form-control-dark" placeholder="https://instagram.com/...">
+                </div>
+                <button type="submit" class="btn btn-dark-gold" style="width:100%;">Salvar Perfil →</button>
+            </form>
+        </div>
 
-                <button onclick="document.getElementById('approve-{{ mission.id }}').style.display='block'" class="btn btn-primary" style="background: var(--gold); border: none; cursor: pointer;">
-                    Avaliar & Aprovar
-                </button>
-                
-                <!-- Simple Inline Modal for Approval -->
-                <div id="approve-{{ mission.id }}" class="form-card" style="display: none; margin-top: 1rem; border: 1px dashed var(--gold); background: var(--cream);">
-                    <form action="/business/missions/{{ mission.id }}/approve" method="post">
-                        <div class="form-group">
-                            <label>Nota (1-5)</label>
-                            <select name="score" class="form-control" required>
-                                <option value="5">5 estrelas</option>
-                                <option value="4">4 estrelas</option>
-                                <option value="3">3 estrelas</option>
-                                <option value="2">2 estrelas</option>
-                                <option value="1">1 estrela</option>
-                            </select>
+        {% else %}
+
+        <!-- ===== AVISO: aguardando verificação ===== -->
+        {% if not business.is_verified %}
+        <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); color:#fbbf24; padding:0.85rem 1.25rem; border-radius:12px; margin-bottom:1.5rem; font-size:0.85rem; display:flex; align-items:center; gap:0.75rem;">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>Em análise:</strong> Seu perfil está sendo verificado. Missões criadas só serão visíveis aos prestadores após a aprovação.</span>
+        </div>
+        {% endif %}
+
+        <!-- ===== STAT CARDS ===== -->
+        {% set total = missions | length %}
+        {% set abertas = missions | selectattr('status.value', 'equalto', 'OPEN') | list | length %}
+        {% set andamento = missions | selectattr('status.value', 'equalto', 'ACCEPTED') | list | length %}
+        {% set concluidas = missions | selectattr('status.value', 'equalto', 'APPROVED') | list | length %}
+        {% set pct = ((concluidas / total * 100) | int) if total > 0 else 0 %}
+
+        <div class="dash-stats">
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">Saldo de Créditos</div>
+                <div class="dash-stat-value">{{ (concluidas * 100) }}</div>
+                <div class="dash-stat-unit">créditos emitidos</div>
+                <div class="dash-stat-bar"><div class="dash-stat-bar-fill" style="width:{{ pct }}%;"></div></div>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">Missões Abertas</div>
+                <div class="dash-stat-value">{{ abertas }}</div>
+                <div class="dash-stat-unit">aguardando prestador</div>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">Em Andamento</div>
+                <div class="dash-stat-value">{{ andamento }}</div>
+                <div class="dash-stat-unit">colaborações ativas</div>
+            </div>
+            <div class="dash-stat-card">
+                <div class="dash-stat-label">Concluídas</div>
+                <div class="dash-stat-value">{{ concluidas }}</div>
+                <div class="dash-stat-unit">missões aprovadas</div>
+            </div>
+        </div>
+
+        <!-- ===== CONTENT GRID ===== -->
+        <div class="dash-grid">
+
+            <!-- Coluna Principal -->
+            <div>
+
+                <!-- Formulário: Nova Missão -->
+                <div id="new-mission-form" class="dash-card dash-inline-form" style="display:none; margin-bottom:1.5rem; border-style:dashed;">
+                    <div class="dash-card-title" style="margin-bottom:1rem;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline; vertical-align:middle; margin-right:0.4rem;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Nova Missão
+                    </div>
+                    <form action="/business/missions" method="post">
+                        <div style="display:grid; grid-template-columns:1fr auto; gap:1rem; margin-bottom:1rem;">
+                            <div>
+                                <label class="dash-inline-form-label" for="title">Título da Missão</label>
+                                <input type="text" id="title" name="title" class="form-control-dark" placeholder="Ex: 5 fotos de produto..." required>
+                            </div>
+                            <div>
+                                <label class="dash-inline-form-label" for="credit_value">Créditos</label>
+                                <input type="number" id="credit_value" name="credit_value" class="form-control-dark" min="1" placeholder="100" required style="width:110px;">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Recomendação (Texto curto)</label>
-                            <input type="text" name="recommendation_text" class="form-control" required placeholder="Ex: Ótimo trabalho, muito atencioso!">
+                        <div style="margin-bottom:1rem;">
+                            <label class="dash-inline-form-label" for="description">Descrição Detalhada</label>
+                            <textarea id="description" name="description" class="form-control-dark" rows="3" placeholder="Descreva o que precisa ser feito, estilo esperado, prazos..." required style="resize:vertical;"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label style="display: flex; align-items: center; cursor: pointer;">
-                                <input type="checkbox" name="allow_public" value="true" style="margin-right: 0.5rem; width: auto;">
-                                Permitir uso no portfólio público
-                            </label>
-                        </div>
-                        <div class="mt-2 text-right">
-                         <button type="button" onclick="document.getElementById('approve-{{ mission.id }}').style.display='none'" class="btn btn-secondary">Cancelar</button>
-                            <button type="submit" class="btn btn-primary">Confirmar Aprovação</button>
+                        <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+                            <button type="button" class="btn btn-ghost-dark" onclick="toggleForm('new-mission-form')">Cancelar</button>
+                            <button type="submit" class="btn btn-dark-gold">Criar Missão</button>
                         </div>
                     </form>
                 </div>
-                
-            {% elif mission.status.value == 'OPEN' %}
-               <!-- Add Cancel button later -->
-            {% elif mission.status.value == 'APPROVED' %}
-                <div style="color: green; font-size: 0.9rem;">Missão finalizada e paga.</div>
-            {% endif %}
+
+                <!-- Mission Control -->
+                <div class="dash-card" id="missoes">
+                    <div class="dash-card-header">
+                        <div>
+                            <div class="dash-card-title">Mission Control</div>
+                            <div class="dash-card-sub">Colaborações ativas e histório</div>
+                        </div>
+                        <span class="dash-card-count">({{ total }})</span>
+                    </div>
+
+                    {% for mission in missions %}
+                    <div class="mission-item">
+                        <div class="mission-item-img">
+                            {% if mission.status.value == 'OPEN' %}🎯
+                            {% elif mission.status.value == 'ACCEPTED' %}⚡
+                            {% elif mission.status.value == 'DONE' %}🔍
+                            {% elif mission.status.value == 'APPROVED' %}✅
+                            {% endif %}
+                        </div>
+                        <div class="mission-item-body">
+                            <div class="mission-item-category">{{ business.name }}</div>
+                            <div class="mission-item-title">{{ mission.title }}</div>
+                            <div class="mission-item-meta">
+                                <span>
+                                    {% if mission.provider %}
+                                        {{ mission.provider.name }}
+                                    {% else %}
+                                        Aguardando prestador
+                                    {% endif %}
+                                </span>
+                                <span>·</span>
+                                <span class="mission-item-credits">{{ mission.credit_value }} $</span>
+                            </div>
+                            {% if mission.status.value == 'ACCEPTED' %}
+                            <div class="progress-bar-mini"><div class="progress-bar-mini-fill" style="width:50%;"></div></div>
+                            {% endif %}
+                        </div>
+                        <div class="mission-item-actions">
+                            <span class="badge-dark
+                                {% if mission.status.value == 'OPEN' %}badge-open
+                                {% elif mission.status.value == 'ACCEPTED' %}badge-active
+                                {% elif mission.status.value == 'DONE' %}badge-pending
+                                {% elif mission.status.value == 'APPROVED' %}badge-done
+                                {% endif %}">
+                                {% if mission.status.value == 'OPEN' %}Aberta
+                                {% elif mission.status.value == 'ACCEPTED' %}Em Andamento
+                                {% elif mission.status.value == 'DONE' %}Av. Pendente
+                                {% elif mission.status.value == 'APPROVED' %}Concluída
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Bloco de aprovação (status DONE) -->
+                    {% if mission.status.value == 'DONE' %}
+                    <div style="margin:-0.25rem 0 0.75rem; padding:1rem; background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2); border-radius:10px;">
+                        <div style="font-size:0.78rem; color:rgba(155,139,122,0.9); margin-bottom:0.5rem; font-weight:600; text-transform:uppercase; letter-spacing:0.06em;">Evidência de Trabalho</div>
+                        <a href="{{ mission.proof_of_work }}" target="_blank" style="color:var(--gold); font-size:0.85rem; word-break:break-all;">{{ mission.proof_of_work }}</a>
+                        <p style="font-size:0.75rem; color:rgba(155,139,122,0.7); margin-top:0.5rem;">⚠️ Verifique o trabalho antes de aprovar.</p>
+                        <button onclick="toggleForm('approve-{{ mission.id }}')" class="btn btn-dark-gold" style="margin-top:0.75rem; padding:0.55rem 1.25rem; font-size:0.82rem;">Avaliar &amp; Aprovar</button>
+                        <div id="approve-{{ mission.id }}" class="dash-inline-form" style="display:none; margin-top:1rem;">
+                            <form action="/business/missions/{{ mission.id }}/approve" method="post">
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                                    <div>
+                                        <label class="dash-inline-form-label">Nota (1–5)</label>
+                                        <select name="score" class="form-control-dark" required>
+                                            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                                            <option value="4">⭐⭐⭐⭐ (4)</option>
+                                            <option value="3">⭐⭐⭐ (3)</option>
+                                            <option value="2">⭐⭐ (2)</option>
+                                            <option value="1">⭐ (1)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="dash-inline-form-label">Portfólio Público</label>
+                                        <label style="display:flex; align-items:center; gap:0.5rem; padding:0.75rem 1rem; background:rgba(255,255,255,0.04); border:1px solid rgba(200,155,60,0.2); border-radius:10px; cursor:pointer; color:rgba(240,236,228,0.75); font-size:0.85rem;">
+                                            <input type="checkbox" name="allow_public" value="true" style="width:auto;">
+                                            Permitir no portfólio
+                                        </label>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:1rem;">
+                                    <label class="dash-inline-form-label">Recomendação</label>
+                                    <input type="text" name="recommendation_text" class="form-control-dark" required placeholder="Ex: Ótimo trabalho, muito atencioso!">
+                                </div>
+                                <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+                                    <button type="button" class="btn btn-ghost-dark" onclick="toggleForm('approve-{{ mission.id }}')">Cancelar</button>
+                                    <button type="submit" class="btn btn-dark-gold">Confirmar Aprovação</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% else %}
+                    <div style="text-align:center; padding:3rem 0; color:rgba(155,139,122,0.5);">
+                        <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="display:block; margin:0 auto 1rem;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        <p style="color:rgba(155,139,122,0.5); font-size:0.9rem;">Nenhuma missão criada ainda.</p>
+                        <button onclick="toggleForm('new-mission-form')" class="btn btn-dark-gold" style="margin-top:1rem; font-size:0.85rem;">Criar primeira missão</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Coluna Lateral -->
+            <div>
+
+                <!-- Validar Consumo -->
+                <div class="dash-card" id="validar" style="margin-bottom:1.5rem;">
+                    <div class="dash-card-header" style="margin-bottom:1rem;">
+                        <div>
+                            <div class="dash-card-title">Validar Consumo</div>
+                            <div class="dash-card-sub">Código manual (6 letras)</div>
+                        </div>
+                        <div class="quick-action-icon">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                    </div>
+                    <form action="/business/redeem" method="get" style="display:flex; gap:0.75rem;">
+                        <input type="text" name="token" class="form-control-dark" placeholder="Ex: A1B2C3" required
+                            style="text-transform:uppercase; font-weight:700; letter-spacing:0.15em; font-size:1rem;">
+                        <button type="submit" class="btn btn-dark-gold" style="padding:0.75rem 1.25rem; white-space:nowrap;">Validar</button>
+                    </form>
+                </div>
+
+                <!-- Ações Rápidas -->
+                <div class="dash-card">
+                    <div class="dash-card-title" style="margin-bottom:1rem;">Ações Rápidas</div>
+                    <button onclick="toggleForm('new-mission-form')" class="quick-action-item" style="background:none; border:none; cursor:pointer; width:100%; text-align:left; font-family:'Inter',sans-serif;">
+                        <div class="quick-action-icon">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </div>
+                        Publicar Nova Missão
+                    </button>
+                    <a href="/u/{{ user.id }}/portfolio" target="_blank" class="quick-action-item">
+                        <div class="quick-action-icon">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        Ver Talentos
+                    </a>
+                    <a href="#validar" class="quick-action-item">
+                        <div class="quick-action-icon">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                        </div>
+                        Transferir Crédito
+                    </a>
+                </div>
+
+                <!-- Atividade Recente -->
+                {% if missions %}
+                <div class="dash-card" style="margin-top:1.5rem;">
+                    <div class="dash-card-title" style="margin-bottom:1rem;">Atividade Recente</div>
+                    {% for mission in missions[:4] %}
+                    <div class="activity-item">
+                        <div class="activity-dot" style="
+                            {% if mission.status.value == 'APPROVED' %}background:#4ade80;
+                            {% elif mission.status.value == 'DONE' %}background:#fbbf24;
+                            {% elif mission.status.value == 'ACCEPTED' %}background:#60a5fa;
+                            {% else %}background:var(--gold);{% endif %}"></div>
+                        <div>
+                            <div class="activity-text">{{ mission.title }}</div>
+                            <div class="activity-time">
+                                {% if mission.status.value == 'OPEN' %}Aguardando prestador
+                                {% elif mission.status.value == 'ACCEPTED' %}Em andamento
+                                {% elif mission.status.value == 'DONE' %}Aguardando aprovação
+                                {% elif mission.status.value == 'APPROVED' %}Concluída e paga
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
         </div>
-    </div>
-    {% else %}
-    <p style="color: var(--sand); text-align: center;">Nenhuma missão criada ainda.</p>
-    {% endfor %}
+
+        {% endif %}
+    </main>
 </div>
-{% endif %}
-</div>
-{% endblock %}
+
+<script>
+function toggleForm(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
