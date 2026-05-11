@@ -207,8 +207,8 @@ Nós criamos um script facilitador (`run_local.sh`) que cuida de praticamente tu
 
 1. **Clone o repositório e acesse a pasta:**
    ```bash
-   git clone https://github.com/ilaraca/coffee-colab.git
-   cd coffee-colab
+   git clone https://github.com/ilaraca/modo-colab.git
+   cd modo-colab
    ```
 
 2. **Configure as variáveis de ambiente:**
