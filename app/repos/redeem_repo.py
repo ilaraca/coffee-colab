@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 from app.models.redeem import RedeemToken, TokenStatus
 
@@ -30,6 +30,20 @@ def get_token_by_hash(db: Session, token_hash: str) -> Optional[RedeemToken]:
 
 def update_token_status(db: Session, token: RedeemToken, status: TokenStatus) -> RedeemToken:
     token.status = status
+    db.commit()
+    db.refresh(token)
+    return token
+
+
+def complete_redemption(
+    db: Session,
+    token: RedeemToken,
+    transaction_id: uuid.UUID,
+    redeemed_at: Optional[datetime] = None,
+) -> RedeemToken:
+    token.status = TokenStatus.REDEEMED
+    token.transaction_id = transaction_id
+    token.redeemed_at = redeemed_at or datetime.now(timezone.utc)
     db.commit()
     db.refresh(token)
     return token

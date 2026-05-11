@@ -1,4 +1,4 @@
-# Modo Colab 🚀
+# Modo Colab
 
 **Modo Colab** é uma plataforma de "banco de escambo moderno" que conecta estabelecimentos locais (cafeterias, restaurantes, padarias, estúdios) a pessoas em busca de experiências reais para fortalecer seus portfólios (designers, fotógrafos, social media, devs).
 
@@ -8,7 +8,7 @@ A premissa é simples: em vez de dinheiro, a moeda de troca é a experiência e 
 
 ---
 
-## 🔄 Como Funciona (Fluxo Principal)
+## Como Funciona (Fluxo Principal)
 
 ```mermaid
 sequenceDiagram
@@ -41,7 +41,7 @@ sequenceDiagram
 
 ---
 
-## 🚀 Funcionalidades Principais
+## Funcionalidades Principais
 
 ### Autenticação & Segurança
 - **Cadastro de Usuários:** Perfis separados para `BUSINESS_ADMIN` (Estabelecimentos) e `PROVIDER` (Talentos Locais).
@@ -79,7 +79,7 @@ sequenceDiagram
 
 ---
 
-## 🛣️ Fluxo de Endpoints (E2E)
+## Fluxo de Endpoints (E2E)
 
 Abaixo está a representação técnica do ciclo completo (End-to-End) mapeando os endpoints da API:
 
@@ -122,7 +122,7 @@ sequenceDiagram
 
 ---
 
-## 🏛️ Arquitetura da Solução
+## Arquitetura da Solução
 
 ```mermaid
 graph TD
@@ -181,7 +181,7 @@ graph TD
 
 ---
 
-## 🛠 Tech Stack e Decisões Arquiteturais
+## Tech Stack e Decisões Arquiteturais
 
 | Camada | Tecnologia | Motivo da Escolha |
 |---|---|---|
@@ -195,7 +195,7 @@ graph TD
 
 ---
 
-## 💻 Como Rodar o Projeto Localmente
+## Como Rodar o Projeto Localmente
 
 Nós criamos um script facilitador (`run_local.sh`) que cuida de praticamente tudo para você (gerencia o banco pelo Docker, cria o ambiente virtual, instala dependências e roda as migrações).
 
@@ -216,6 +216,26 @@ Nós criamos um script facilitador (`run_local.sh`) que cuida de praticamente tu
    cp .env.example .env
    ```
 
+### Postgres (Docker) e Alembic
+
+O `docker-compose.yml` expõe o Postgres na porta **5433** do host (`5433:5432`). O `.env.example` já usa essa porta:
+
+`postgresql://user:password@localhost:5433/coffeecolab`
+
+**Por que importa:** sem `DATABASE_URL` no ambiente, o **padrão em código** já usa a porta **5433** (igual ao Docker). O risco aparece se você **definir** no `.env` uma URL com **5432** por engano — aí a app e o Alembic podem falhar ou usar **outro** Postgres na máquina. Para Docker local, prefira copiar o `.env.example` ou omitir `DATABASE_URL` e confiar no padrão.
+
+**Migrations manualmente** (com `docker compose up -d` e o `.env` correto):
+
+```bash
+./venv/bin/alembic upgrade head
+```
+
+O `./run_local.sh --setup` já executa `alembic upgrade head` após instalar dependências. Use o comando acima quando não tiver passado por `--setup`, depois de um `git pull` com novas revisões, ou se preferir rodar migrations antes de subir o servidor.
+
+**Padrão no código:** `app/core/config.py` usa `postgresql://user:password@localhost:5433/coffeecolab` quando `DATABASE_URL` não está definida no ambiente — alinhado ao `docker-compose.yml`.
+
+O `./run_local.sh` também exporta `DATABASE_URL` com a **5433** ao iniciar o servidor (mesmo valor; evita surpresas na sessão).
+
 3. **Inicie o servidor localmente:**
    Pela primeira vez, use a flag `--setup`:
    ```bash
@@ -227,7 +247,7 @@ Nós criamos um script facilitador (`run_local.sh`) que cuida de praticamente tu
 
 ---
 
-## 🧪 Testes Automatizados
+## Testes Automatizados
 
 O projeto inclui uma suíte de testes automatizados com **pytest**:
 
@@ -237,7 +257,7 @@ O projeto inclui uma suíte de testes automatizados com **pytest**:
 
 ---
 
-## 🔑 Credenciais de Teste (Seed)
+## Credenciais de Teste (Seed)
 
 | Perfil | Email de Login | Senha |
 |---|---|---|
@@ -246,7 +266,7 @@ O projeto inclui uma suíte de testes automatizados com **pytest**:
 
 ---
 
-## 📧 Configuração de E-mail
+## Configuração de E-mail
 
 | Variável | Descrição | Valor padrão |
 |---|---|---|

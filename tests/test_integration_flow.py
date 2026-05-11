@@ -5,7 +5,6 @@ from fastapi.testclient import TestClient
 from app.core.db import SessionLocal
 from app.core.tokens import generate_verification_token
 from app.main import app
-from app.repos.users_repo import get_user_by_email
 from app.models.mission import Mission, MissionStatus
 from app.models.portfolio import PortfolioItem
 from app.models.transaction import Transaction
@@ -79,6 +78,7 @@ def test_full_mission_flow(emails, shared_db):
     shared_db.expire_all()
     mission = shared_db.query(Mission).filter(Mission.id == mission.id).first()
     assert mission.status == MissionStatus.ACCEPTED
+    assert mission.accepted_at is not None
     
     # Finish Mission
     res = client.post(f"/provider/missions/{mission_id}/done", data={"proof_of_work": "https://example.com/logo"}, follow_redirects=False)
@@ -88,6 +88,7 @@ def test_full_mission_flow(emails, shared_db):
     mission = shared_db.query(Mission).filter(Mission.id == mission.id).first()
     assert mission.status == MissionStatus.DONE
     assert mission.proof_of_work == "https://example.com/logo"
+    assert mission.completed_at is not None
     
     # Logout
     client.get("/logout")
@@ -102,6 +103,7 @@ def test_full_mission_flow(emails, shared_db):
     shared_db.expire_all()
     mission = shared_db.query(Mission).filter(Mission.id == mission.id).first()
     assert mission.status == MissionStatus.APPROVED
+    assert mission.approved_at is not None
     
     # Check Portfolio
     portfolio_item = shared_db.query(PortfolioItem).filter(PortfolioItem.mission_id == mission.id).first()
@@ -115,3 +117,4 @@ def test_full_mission_flow(emails, shared_db):
     assert tx.amount == 150
     assert tx.type.value == "EARN"
     assert tx.to_user_id == mission.provider_id
+    assert tx.from_business_id == mission.business_id

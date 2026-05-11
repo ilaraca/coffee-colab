@@ -3,7 +3,10 @@ from typing import Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/coffeecolab")
+    # Padrão alinhado ao docker-compose.yml (host 5433 -> container 5432)
+    DATABASE_URL: str = os.getenv(
+        "DATABASE_URL", "postgresql://user:password@localhost:5433/coffeecolab"
+    )
     SECRET_KEY: str = os.getenv("SECRET_KEY", "dev_secret")
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30

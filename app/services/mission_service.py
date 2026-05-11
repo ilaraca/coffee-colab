@@ -45,7 +45,8 @@ class MissionService:
             to_user_id=mission.provider_id,
             amount=mission.credit_value,
             type=TransactionType.EARN,
-            mission_id=mission.id
+            mission_id=mission.id,
+            from_business_id=mission.business_id,
         )
         
         # 4. Create Portfolio Item

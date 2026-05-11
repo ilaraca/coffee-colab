@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
+
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 from typing import List, Optional
 import uuid
 from app.models.mission import Mission, MissionStatus
@@ -29,7 +31,6 @@ def get_open_missions(db: Session, business_id: Optional[uuid.UUID] = None) -> L
 def get_missions_for_provider(db: Session, provider_id: uuid.UUID) -> List[Mission]:
     return db.query(Mission).filter(Mission.provider_id == provider_id).order_by(desc(Mission.updated_at)).all()
 
-from sqlalchemy import func
 
 def get_completed_missions_count_for_provider(db: Session, provider_id: uuid.UUID) -> int:
     return db.query(func.count(Mission.id)).filter(
@@ -41,11 +42,20 @@ def get_mission_by_id(db: Session, mission_id: uuid.UUID) -> Optional[Mission]:
     return db.query(Mission).filter(Mission.id == mission_id).first()
 
 def update_mission_status(db: Session, mission: Mission, status: MissionStatus, provider_id: Optional[uuid.UUID] = None, proof_of_work: Optional[str] = None) -> Mission:
+    now = datetime.now(timezone.utc)
     mission.status = status
     if provider_id:
         mission.provider_id = provider_id
     if proof_of_work:
         mission.proof_of_work = proof_of_work
+    if status == MissionStatus.ACCEPTED:
+        mission.accepted_at = now
+    elif status == MissionStatus.DONE:
+        mission.completed_at = now
+    elif status == MissionStatus.APPROVED:
+        mission.approved_at = now
+    elif status == MissionStatus.CANCELLED:
+        mission.cancelled_at = now
     db.commit()
     db.refresh(mission)
     return mission

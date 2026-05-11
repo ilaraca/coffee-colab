@@ -4,18 +4,20 @@ from typing import List, Optional
 from app.models.transaction import Transaction, TransactionType, TransactionStatus
 
 def create_transaction(
-    db: Session, 
-    business_id: uuid.UUID, 
-    to_user_id: uuid.UUID, 
-    amount: int, 
-    type: TransactionType, 
+    db: Session,
+    business_id: uuid.UUID,
+    to_user_id: uuid.UUID,
+    amount: int,
+    type: TransactionType,
     mission_id: Optional[uuid.UUID] = None,
-    from_user_id: Optional[uuid.UUID] = None
+    from_user_id: Optional[uuid.UUID] = None,
+    from_business_id: Optional[uuid.UUID] = None,
 ) -> Transaction:
     tx = Transaction(
         business_id=business_id,
         to_user_id=to_user_id,
         from_user_id=from_user_id,
+        from_business_id=from_business_id,
         amount=amount,
         type=type,
         status=TransactionStatus.CONFIRMED, # Auto-confirm for now

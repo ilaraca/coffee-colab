@@ -79,17 +79,16 @@ class RedeemService:
     def confirm_redemption(self, raw_token: str, business_admin_id: uuid.UUID) -> RedeemToken:
         token = self.verify_token(raw_token)
         
-        # Perform SPEND
-        wallet_repo.create_transaction(
+        tx = wallet_repo.create_transaction(
             self.db,
             business_id=token.business_id,
             to_user_id=token.provider_id,
             amount=token.amount,
             type=TransactionType.SPEND,
-            from_user_id=None # Implicit from context
+            from_user_id=None,
+            from_business_id=token.business_id,
         )
-        
-        # Mark Redeemed
-        redeem_repo.update_token_status(self.db, token, TokenStatus.REDEEMED)
-        
+
+        redeem_repo.complete_redemption(self.db, token, tx.id)
+
         return token

@@ -132,7 +132,7 @@ async def confirm_redeem(
         if token_obj_pre.business_id != user.business_id:
              raise HTTPException(403, "Não autorizado")
              
-        token_obj = service.confirm_redemption(token, user.id)
+        service.confirm_redemption(token, user.id)
         
         return templates.TemplateResponse("business_redeem.html", {
             "request": request,

@@ -1,11 +1,15 @@
 import uuid
-from sqlalchemy import Column, Integer, Text, Boolean, ForeignKey, Uuid
+from sqlalchemy import Column, Integer, Text, Boolean, ForeignKey, Uuid, CheckConstraint
 from sqlalchemy.orm import relationship
 from app.core.db import Base
 from app.models.base import TimestampMixin
 
+
 class Rating(Base, TimestampMixin):
     __tablename__ = "ratings"
+    __table_args__ = (
+        CheckConstraint("score >= 1 AND score <= 5", name="ck_rating_score"),
+    )
 
     id = Column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     mission_id = Column(Uuid(as_uuid=True), ForeignKey("missions.id"), unique=True, nullable=False)
