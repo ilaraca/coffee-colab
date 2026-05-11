@@ -4,7 +4,7 @@
 set -e
 
 # Export custom DB URL with port 5433
-export DATABASE_URL="postgresql://user:password@localhost:5433/coffeecolab"
+export DATABASE_URL="postgresql://user:password@localhost:5433/modocolab"
 
 echo "========================================"
 echo "🚀 Modo Colab: Local Runner"

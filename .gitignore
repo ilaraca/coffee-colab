@@ -8,3 +8,7 @@ __pycache__/
 *.sqlite3
 .pytest_cache/
 marketing/
+
+# Ferramentas locais / rascunhos (não versionar)
+.claude/
+scratch/

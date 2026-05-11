@@ -220,7 +220,7 @@ Nós criamos um script facilitador (`run_local.sh`) que cuida de praticamente tu
 
 O `docker-compose.yml` expõe o Postgres na porta **5433** do host (`5433:5432`). O `.env.example` já usa essa porta:
 
-`postgresql://user:password@localhost:5433/coffeecolab`
+`postgresql://user:password@localhost:5433/modocolab`
 
 **Por que importa:** sem `DATABASE_URL` no ambiente, o **padrão em código** já usa a porta **5433** (igual ao Docker). O risco aparece se você **definir** no `.env` uma URL com **5432** por engano — aí a app e o Alembic podem falhar ou usar **outro** Postgres na máquina. Para Docker local, prefira copiar o `.env.example` ou omitir `DATABASE_URL` e confiar no padrão.
 
@@ -232,7 +232,9 @@ O `docker-compose.yml` expõe o Postgres na porta **5433** do host (`5433:5432`)
 
 O `./run_local.sh --setup` já executa `alembic upgrade head` após instalar dependências. Use o comando acima quando não tiver passado por `--setup`, depois de um `git pull` com novas revisões, ou se preferir rodar migrations antes de subir o servidor.
 
-**Padrão no código:** `app/core/config.py` usa `postgresql://user:password@localhost:5433/coffeecolab` quando `DATABASE_URL` não está definida no ambiente — alinhado ao `docker-compose.yml`.
+**Padrão no código:** `app/core/config.py` usa `postgresql://user:password@localhost:5433/modocolab` quando `DATABASE_URL` não está definida no ambiente — alinhado ao `docker-compose.yml`.
+
+**Atualização de nome da base:** se já existir um volume Docker com a base antiga (`coffeecolab`), podes recriar o volume (`docker compose down` e remover `postgres_data`, ou `docker compose down -v` se aceitares apagar dados locais) ou manter `POSTGRES_DB`/`DATABASE_URL` como estavam até migrares os dados.
 
 O `./run_local.sh` também exporta `DATABASE_URL` com a **5433** ao iniciar o servidor (mesmo valor; evita surpresas na sessão).
 
