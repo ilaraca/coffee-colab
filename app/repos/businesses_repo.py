@@ -1,3 +1,6 @@
+from typing import Collection, List
+import uuid
+
 from sqlalchemy.orm import Session
 from app.models.business import Business
 from uuid import uuid4
@@ -21,6 +24,14 @@ def create_business(db: Session, name: str, category: str = None, website_url: s
 
 def get_business_by_id(db: Session, business_id) -> Business:
     return db.query(Business).filter(Business.id == business_id).first()
+
+
+def get_businesses_by_ids(
+    db: Session, business_ids: Collection[uuid.UUID]
+) -> List[Business]:
+    if not business_ids:
+        return []
+    return db.query(Business).filter(Business.id.in_(list(business_ids))).all()
 
 def get_first_business(db: Session) -> Business:
     return db.query(Business).first()

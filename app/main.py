@@ -1,3 +1,5 @@
+import uuid
+
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -68,26 +70,16 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/")
 async def home(request: Request):
     from app.core.db import SessionLocal
-    from app.models.user import User
-    from app.models.mission import Mission, MissionStatus
-    from app.models.business import Business
+    from app.repos import missions_repo, users_repo
 
     db = SessionLocal()
     try:
         user = None
         user_id = request.session.get("user_id")
         if user_id:
-            user = db.query(User).filter(User.id == user_id).first()
+            user = users_repo.get_user_by_id(db, uuid.UUID(str(user_id)))
 
-        missions = (
-            db.query(Mission)
-            .join(Mission.business)
-            .filter(Mission.status == MissionStatus.OPEN)
-            .filter(Business.is_verified)
-            .order_by(Mission.created_at.desc())
-            .limit(6)
-            .all()
-        )
+        missions = missions_repo.get_open_verified_missions_for_landing(db, limit=6)
     finally:
         db.close()
 

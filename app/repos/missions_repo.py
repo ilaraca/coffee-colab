@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 from typing import List, Optional
 import uuid
+from app.models.business import Business
 from app.models.mission import Mission, MissionStatus
 
 def create_mission(db: Session, business_id: uuid.UUID, title: str, description: str, credit_value: int) -> Mission:
@@ -27,6 +28,20 @@ def get_open_missions(db: Session, business_id: Optional[uuid.UUID] = None) -> L
     if business_id:
         query = query.filter(Mission.business_id == business_id)
     return query.order_by(desc(Mission.created_at)).all()
+
+
+def get_open_verified_missions_for_landing(
+    db: Session, limit: int = 6
+) -> List[Mission]:
+    return (
+        db.query(Mission)
+        .join(Mission.business)
+        .filter(Mission.status == MissionStatus.OPEN)
+        .filter(Business.is_verified)
+        .order_by(desc(Mission.created_at))
+        .limit(limit)
+        .all()
+    )
 
 def get_missions_for_provider(db: Session, provider_id: uuid.UUID) -> List[Mission]:
     return db.query(Mission).filter(Mission.provider_id == provider_id).order_by(desc(Mission.updated_at)).all()

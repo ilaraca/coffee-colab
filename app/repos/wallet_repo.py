@@ -60,3 +60,28 @@ def get_transactions(db: Session, user_id: uuid.UUID) -> List[Transaction]:
      return db.query(Transaction).filter(
         Transaction.to_user_id == user_id
     ).order_by(Transaction.created_at.desc()).all()
+
+
+def build_provider_grouped_wallets(db: Session, user_id: uuid.UUID) -> List[dict]:
+    """Transações do provider agrupadas por negócio (para templates wallet / dashboard)."""
+    from app.repos import businesses_repo
+
+    transactions = get_transactions(db, user_id)
+    business_ids = {tx.business_id for tx in transactions}
+    businesses = businesses_repo.get_businesses_by_ids(db, business_ids)
+    business_map = {b.id: b for b in businesses}
+
+    grouped: List[dict] = []
+    for b_id, b_obj in business_map.items():
+        b_txs = [tx for tx in transactions if tx.business_id == b_id]
+        b_balance = 0
+        for tx in b_txs:
+            if tx.type.value == "EARN":
+                b_balance += tx.amount
+            elif tx.type.value == "SPEND":
+                b_balance -= tx.amount
+        if b_balance > 0 or b_txs:
+            grouped.append(
+                {"business": b_obj, "balance": b_balance, "transactions": b_txs}
+            )
+    return grouped
