@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 import uuid
 from app.models.rating import Rating
 
@@ -24,7 +25,6 @@ def create_rating(
     db.refresh(rating)
     return rating
 
-from sqlalchemy import func
 
 def get_avg_score_for_provider(db: Session, provider_id: uuid.UUID) -> float:
     return db.query(func.avg(Rating.score)).filter(Rating.to_user_id == provider_id).scalar()

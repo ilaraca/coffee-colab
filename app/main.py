@@ -20,7 +20,7 @@ app = FastAPI(title="Modo Colab")
 # Middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware  # noqa: E402
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
@@ -48,8 +48,8 @@ app.include_router(routes_portfolio.router)
 
 templates = Jinja2Templates(directory="app/templates")
 
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from fastapi.responses import HTMLResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException  # noqa: E402
+from fastapi.responses import HTMLResponse  # noqa: E402
 
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):

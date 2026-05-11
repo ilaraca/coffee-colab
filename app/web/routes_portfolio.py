@@ -2,12 +2,9 @@ from fastapi import APIRouter, Request, Depends, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 from app.core.db import get_db
 from app.repos import users_repo
 from app.web.deps import get_provider
-from app.models.portfolio import PortfolioItem
-from app.models.rating import Rating
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
