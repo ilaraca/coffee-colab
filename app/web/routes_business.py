@@ -17,12 +17,11 @@ async def business_dashboard(request: Request, user = Depends(get_business_admin
     if user.business_id:
         business = businesses_repo.get_business_by_id(db, user.business_id)
         missions = missions_repo.get_missions_by_business(db, user.business_id)
-        
-    return templates.TemplateResponse("business_dashboard.html", {
-        "request": request, 
+
+    return templates.TemplateResponse(request, "business_dashboard.html", {
         "user": user,
         "business": business,
-        "missions": missions
+        "missions": missions,
     })
 
 @router.post("/register_profile")
@@ -37,10 +36,10 @@ async def register_profile(
 ) -> RedirectResponse:
     if user.business_id:
         raise HTTPException(status_code=400, detail="Estabelecimento já cadastrado.")
-        
+
     new_business = businesses_repo.create_business(db, name, category, website_url, instagram_url)
     users_repo.link_business_to_user(db, user, new_business.id)
-    
+
     return RedirectResponse(url="/business", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.post("/missions")
@@ -54,10 +53,10 @@ async def create_mission(
 ) -> RedirectResponse:
     if not user.business_id:
         raise HTTPException(status_code=400, detail="Must register business profile first")
-        
+
     if credit_value <= 0:
-         raise HTTPException(status_code=400, detail="Credit value must be positive")
-         
+        raise HTTPException(status_code=400, detail="Credit value must be positive")
+
     missions_repo.create_mission(db, user.business_id, title, description, credit_value)
     return RedirectResponse(url="/business", status_code=status.HTTP_303_SEE_OTHER)
 
@@ -71,7 +70,7 @@ async def approve_mission(
     db: Session = Depends(get_db)
 ) -> RedirectResponse:
     from app.services.mission_service import MissionService
-    
+
     service = MissionService(db)
     service.approve_mission(
         mission_id,
@@ -80,7 +79,7 @@ async def approve_mission(
         recommendation_text,
         allow_public
     )
-    
+
     return RedirectResponse(url="/business", status_code=status.HTTP_303_SEE_OTHER)
 
 @router.get("/redeem")
@@ -98,23 +97,21 @@ async def view_redeem(
 ):
     from app.services.redeem_service import RedeemService
     service = RedeemService(db)
-    
+
     try:
         token_obj = service.verify_token(token)
         provider = users_repo.get_user_by_id(db, token_obj.provider_id)
         if token_obj.business_id != user.business_id:
-             raise HTTPException(403, "Token não pertence a este estabelecimento.")
-             
-        return templates.TemplateResponse("business_redeem.html", {
-            "request": request,
+            raise HTTPException(403, "Token não pertence a este estabelecimento.")
+
+        return templates.TemplateResponse(request, "business_redeem.html", {
             "token_str": token,
             "token_obj": token_obj,
-            "provider": provider
+            "provider": provider,
         })
     except HTTPException as e:
-        return templates.TemplateResponse("business_redeem.html", {
-            "request": request,
-            "error": e.detail
+        return templates.TemplateResponse(request, "business_redeem.html", {
+            "error": e.detail,
         })
 
 @router.post("/redeem/{token}", response_class=HTMLResponse)
@@ -126,20 +123,18 @@ async def confirm_redeem(
 ):
     from app.services.redeem_service import RedeemService
     service = RedeemService(db)
-    
+
     try:
         token_obj_pre = service.verify_token(token)
         if token_obj_pre.business_id != user.business_id:
-             raise HTTPException(403, "Não autorizado")
-             
+            raise HTTPException(403, "Não autorizado")
+
         service.confirm_redemption(token, user.id)
-        
-        return templates.TemplateResponse("business_redeem.html", {
-            "request": request,
-            "success": True
+
+        return templates.TemplateResponse(request, "business_redeem.html", {
+            "success": True,
         })
     except HTTPException as e:
-        return templates.TemplateResponse("business_redeem.html", {
-            "request": request,
-            "error": e.detail
+        return templates.TemplateResponse(request, "business_redeem.html", {
+            "error": e.detail,
         })

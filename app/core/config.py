@@ -1,13 +1,13 @@
-import os
 from typing import Optional
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
+    model_config = ConfigDict(env_file=".env")
+
     # Padrão alinhado ao docker-compose.yml (host 5433 -> container 5432)
-    DATABASE_URL: str = os.getenv(
-        "DATABASE_URL", "postgresql://user:password@localhost:5433/modocolab"
-    )
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "dev_secret")
+    DATABASE_URL: str = "postgresql://user:password@localhost:5433/modocolab"
+    SECRET_KEY: str = "dev_secret"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     SENTRY_DSN: Optional[str] = None
@@ -22,8 +22,5 @@ class Settings(BaseSettings):
 
     # Base URL used in verification links
     APP_BASE_URL: str = "http://localhost:8000"
-
-    class Config:
-        env_file = ".env"
 
 settings = Settings()

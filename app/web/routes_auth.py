@@ -25,8 +25,9 @@ async def login_page(request: Request):
     success = request.session.pop("flash_success", None)
     unverified_email = request.session.pop("unverified_email", None)
     return templates.TemplateResponse(
+        request,
         "login.html",
-        {"request": request, "login_error": error, "success": success, "unverified_email": unverified_email},
+        {"login_error": error, "success": success, "unverified_email": unverified_email},
     )
 
 
@@ -74,7 +75,7 @@ async def logout(request: Request):
 @router.get("/register", response_class=HTMLResponse)
 async def register_page(request: Request):
     error = request.session.pop("flash_error", None)
-    return templates.TemplateResponse("register.html", {"request": request, "error": error})
+    return templates.TemplateResponse(request, "register.html", {"error": error})
 
 
 @router.post("/register")
@@ -114,8 +115,9 @@ async def register(
 @router.get("/verify-email-sent", response_class=HTMLResponse)
 async def verify_email_sent_page(request: Request, email: str = ""):
     return templates.TemplateResponse(
+        request,
         "verify_email_sent.html",
-        {"request": request, "email": email},
+        {"email": email},
     )
 
 
@@ -125,9 +127,9 @@ async def verify_email(request: Request, token: str = "", db: Session = Depends(
 
     if not email:
         return templates.TemplateResponse(
+            request,
             "verify_email_sent.html",
             {
-                "request": request,
                 "email": "",
                 "error": "Link inválido ou expirado. Solicite um novo e-mail de verificação.",
             },
@@ -136,9 +138,9 @@ async def verify_email(request: Request, token: str = "", db: Session = Depends(
     user = users_repo.get_user_by_email(db, email)
     if not user:
         return templates.TemplateResponse(
+            request,
             "verify_email_sent.html",
             {
-                "request": request,
                 "email": "",
                 "error": "Usuário não encontrado.",
             },
@@ -147,11 +149,7 @@ async def verify_email(request: Request, token: str = "", db: Session = Depends(
     if not user.email_verified:
         users_repo.verify_user_email(db, user)
 
-    return templates.TemplateResponse(
-        "verify_email_success.html",
-        {"request": request},
-    )
-
+    return templates.TemplateResponse(request, "verify_email_success.html", {})
 
 
 @router.post("/resend-verification")
@@ -181,8 +179,9 @@ async def resend_verification(
 async def forgot_password_page(request: Request):
     error = request.session.pop("flash_error", None)
     return templates.TemplateResponse(
+        request,
         "forgot_password.html",
-        {"request": request, "error": error},
+        {"error": error},
     )
 
 @router.post("/forgot-password")
@@ -200,13 +199,6 @@ async def forgot_password(
     user = users_repo.get_user_by_email(db, email_clean)
 
     if user:
-        if not user.email_verified:
-            # Optionally, don't allow reset if unverified, but sending the 
-            # verification email again is tricky from here. 
-            # Allowing password reset even for unverified emails could be okay, 
-            # since they prove ownership of the mailbox. But let's keep it simple.
-            pass
-        # Send password reset email
         background_tasks.add_task(send_password_reset_email, email_clean)
 
     return RedirectResponse(
@@ -217,8 +209,9 @@ async def forgot_password(
 @router.get("/forgot-password-sent", response_class=HTMLResponse)
 async def forgot_password_sent_page(request: Request, email: str = ""):
     return templates.TemplateResponse(
+        request,
         "forgot_password_sent.html",
-        {"request": request, "email": email},
+        {"email": email},
     )
 
 @router.get("/reset-password", response_class=HTMLResponse)
@@ -227,19 +220,19 @@ async def reset_password_page(request: Request, token: str = ""):
     email = confirm_password_reset_token(token)
 
     if not email:
-        # Invalid or expired token
         return templates.TemplateResponse(
+            request,
             "forgot_password_sent.html",
             {
-                "request": request,
                 "email": "",
                 "error": "Link inválido ou expirado. Por favor, solicite a redefinição de senha novamente.",
             },
         )
 
     return templates.TemplateResponse(
+        request,
         "reset_password.html",
-        {"request": request, "token": token, "error": error},
+        {"token": token, "error": error},
     )
 
 @router.post("/reset-password")
@@ -260,14 +253,12 @@ async def reset_password(
         request.session["flash_error"] = "Usuário não encontrado."
         return RedirectResponse(url="/forgot-password", status_code=status.HTTP_303_SEE_OTHER)
 
-    # Hash the new password and save it
     new_password_hash = get_password_hash(password)
     users_repo.update_user_password(db, user, new_password_hash)
 
-    # Also mark email as verified if they reset their password, since they proved ownership
+    # Also mark email as verified since they proved ownership of the mailbox
     if not user.email_verified:
         users_repo.verify_user_email(db, user)
 
     request.session["flash_success"] = "Senha alterada com sucesso! Faça login com a nova senha."
     return RedirectResponse(url="/login", status_code=status.HTTP_303_SEE_OTHER)
-

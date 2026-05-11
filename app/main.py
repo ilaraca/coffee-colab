@@ -54,16 +54,16 @@ from fastapi.responses import HTMLResponse  # noqa: E402
 @app.exception_handler(StarletteHTTPException)
 async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
     if exc.status_code == 404:
-        return templates.TemplateResponse("errors/404.html", {"request": request}, status_code=404)
+        return templates.TemplateResponse(request, "errors/404.html", {}, status_code=404)
     if exc.status_code == 500:
-        return templates.TemplateResponse("errors/500.html", {"request": request}, status_code=500)
+        return templates.TemplateResponse(request, "errors/500.html", {}, status_code=500)
     return HTMLResponse(content=f"Error {exc.status_code}: {exc.detail}", status_code=exc.status_code)
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     import traceback
     traceback.print_exc()
-    return templates.TemplateResponse("errors/500.html", {"request": request}, status_code=500)
+    return templates.TemplateResponse(request, "errors/500.html", {}, status_code=500)
 
 @app.get("/")
 async def home(request: Request):
@@ -92,7 +92,8 @@ async def home(request: Request):
         db.close()
 
     return templates.TemplateResponse(
+        request,
         "landing.html",
-        {"request": request, "user": user, "missions": missions},
+        {"user": user, "missions": missions},
     )
 
